@@ -1,4 +1,4 @@
-package com.medical.appointments.user.entity;
+package com.medical.appointments.user;
 
 import jakarta.persistence.*;
 import lombok.*;

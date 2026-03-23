@@ -1,7 +1,5 @@
-package com.medical.appointments.exception.handler;
+package com.medical.appointments.exception;
 
-import com.medical.appointments.exception.BaseException;
-import com.medical.appointments.exception.dto.ExceptionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

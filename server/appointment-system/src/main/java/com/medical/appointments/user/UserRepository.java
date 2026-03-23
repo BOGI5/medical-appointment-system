@@ -1,6 +1,5 @@
-package com.medical.appointments.user.repository;
+package com.medical.appointments.user;
 
-import com.medical.appointments.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
