@@ -7,8 +7,12 @@ import com.medical.appointments.security.cookie.CookieService;
 import com.medical.appointments.security.jwt.JwtService;
 import com.medical.appointments.auth.dto.RegisterRequest;
 import com.medical.appointments.auth.dto.LoginRequest;
+import com.medical.appointments.security.token.RefreshToken;
+import com.medical.appointments.security.token.RefreshTokenService;
+import com.medical.appointments.security.token.exception.InvalidRefreshTokenException;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private final RefreshTokenService refreshTokenService;
     private final PasswordEncoder passwordEncoder;
     private final CookieService cookieService;
     private final UserService userService;
@@ -36,8 +41,7 @@ public class AuthService {
             throw new InvalidCredentialsException();
         }
 
-        String token = jwtService.generateToken(user);
-        cookieService.setAccessTokenToCookie(response, token);
+        generateTokens(response, user);
 
         return authMapper.toAuthResponse(user);
     }
@@ -48,13 +52,46 @@ public class AuthService {
                 hashPassword(registerRequest.password())
         ));
 
-        String token = jwtService.generateToken(user);
-        cookieService.setAccessTokenToCookie(response, token);
+        generateTokens(response, user);
 
         return authMapper.toAuthResponse(user);
     }
 
-    public void logoutUser(HttpServletResponse response) {
+    public AuthResponse refreshTokens(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = getRefreshTokenFromCookie(request);
+
+        RefreshToken newRefreshToken = refreshTokenService.rotateToken(refreshToken);
+        String newAccessToken = jwtService.generateToken(newRefreshToken.getUser());
+        setTokensToCookies(response, newAccessToken, newRefreshToken.getToken());
+        return authMapper.toAuthResponse(newRefreshToken.getUser());
+    }
+
+    public void logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = getRefreshTokenFromCookie(request);
+
+        try {
+            refreshTokenService.revokeToken(refreshToken);
+        } catch (InvalidRefreshTokenException ignored) {}
+
         cookieService.clearAuthCookies(response);
+    }
+
+    private void generateTokens(HttpServletResponse response, User user) {
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = refreshTokenService.create(user).getToken();
+        setTokensToCookies(response, accessToken, refreshToken);
+    }
+
+    private void setTokensToCookies(HttpServletResponse response, String accessToken, String refreshToken) {
+        cookieService.setAccessTokenToCookie(response, accessToken);
+        cookieService.setRefreshTokenToCookie(response, refreshToken);
+    }
+
+    private String getRefreshTokenFromCookie(HttpServletRequest request) {
+        String refreshToken = cookieService.extractRefreshTokenFromCookie(request);
+        if (refreshToken == null) {
+            throw new InvalidRefreshTokenException();
+        }
+        return refreshToken;
     }
 }

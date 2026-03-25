@@ -1,5 +1,6 @@
 package com.medical.appointments.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,12 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletResponse response) {
-        authService.logoutUser(response);
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        authService.logoutUser(request, response);
+    }
+
+    @PostMapping("/refresh")
+    public AuthResponse refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        return authService.refreshTokens(request, response);
     }
 }
