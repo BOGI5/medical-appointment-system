@@ -58,11 +58,20 @@ public class AuthService {
     }
 
     public AuthResponse refreshTokens(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = getRefreshTokenFromCookie(request);
+        String extractedToken = getRefreshTokenFromCookie(request);
 
-        RefreshToken newRefreshToken = refreshTokenService.rotateToken(refreshToken);
+        RefreshToken oldRefreshToken = refreshTokenService.validateToken(extractedToken);
+
+        if (!userService.existsByEmail(oldRefreshToken.getUser().getEmail())) {
+            throw new InvalidRefreshTokenException();
+        }
+
+        RefreshToken newRefreshToken = refreshTokenService.rotateToken(oldRefreshToken);
+
         String newAccessToken = jwtService.generateToken(newRefreshToken.getUser());
+
         setTokensToCookies(response, newAccessToken, newRefreshToken.getToken());
+
         return authMapper.toAuthResponse(newRefreshToken.getUser());
     }
 

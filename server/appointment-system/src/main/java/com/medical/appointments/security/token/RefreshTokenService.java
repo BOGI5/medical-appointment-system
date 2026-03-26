@@ -43,8 +43,7 @@ public class RefreshTokenService {
         return refreshToken;
     }
 
-    public RefreshToken rotateToken(String token) {
-        RefreshToken refreshToken = validateToken(token);
+    public RefreshToken rotateToken(RefreshToken refreshToken) {
         refreshToken.setActive(false);
         refreshTokenRepository.save(refreshToken);
         return create(refreshToken.getUser());

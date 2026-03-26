@@ -1,6 +1,7 @@
 package com.medical.appointments.user;
 
 import com.medical.appointments.user.dto.CreateUser;
+import com.medical.appointments.user.exception.SelfDeleteException;
 import com.medical.appointments.user.exception.UserAlreadyExistsException;
 import com.medical.appointments.user.exception.UserNotFoundException;
 import com.medical.appointments.user.mapper.UserMapper;
@@ -33,5 +34,17 @@ public class UserService {
             throw new UserAlreadyExistsException();
         }
         return userRepository.save(userMapper.toEntity(createUser));
+    }
+
+    public void deleteCurrentUser(User user) {
+        userRepository.delete(user);
+    }
+
+    public void deleteUserById(Long issuerId, Long id) {
+        if (issuerId.equals(id)) {
+            throw new SelfDeleteException();
+        }
+
+        userRepository.deleteById(id);
     }
 }
