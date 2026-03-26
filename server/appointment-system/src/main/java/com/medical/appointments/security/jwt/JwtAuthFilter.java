@@ -1,6 +1,5 @@
 package com.medical.appointments.security.jwt;
 
-import com.medical.appointments.security.cookie.CookieService;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
 import jakarta.servlet.FilterChain;
@@ -19,7 +18,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private final CookieService cookieService;
     private final UserService userService;
     private final JwtService jwtService;
 
@@ -29,9 +27,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = cookieService.extractAccessTokenFromCookie(request);
+        String header = request.getHeader("Authorization");
 
-        if (token == null || !jwtService.validateToken(token)) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = header.substring(7);
+
+        if (!jwtService.validateToken(token)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -48,17 +53,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        User user = userService.findOptionalByEmail(email).orElse(null);
+        userService.findOptionalByEmail(email).ifPresent(user -> {
+            UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(user, null, List.of());
 
-        if (user == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(user, null, List.of());
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        });
 
         filterChain.doFilter(request, response);
     }

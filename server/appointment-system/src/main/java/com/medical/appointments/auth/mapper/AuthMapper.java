@@ -18,14 +18,16 @@ public class AuthMapper {
         );
     }
 
-    public AuthResponse toAuthResponse(User user) {
+    public AuthResponse toAuthResponse(User user, String accessToken, String refreshToken) {
         return new AuthResponse(
                 new UserResponse(
                         user.getId(),
                         user.getEmail(),
                         user.getFirstName(),
                         user.getLastName()
-                )
+                ),
+                accessToken,
+                refreshToken
         );
     }
 }
