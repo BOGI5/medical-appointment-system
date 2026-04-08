@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 
 public class SelfDeleteException extends BaseException {
 
-    private static final String MESSAGE = "Issuer cannot be deleted, try using DELETE users/me endpoint";
+    private static final String MESSAGE = "The issuer cannot delete itself, try using DELETE users/me endpoint";
 
     public SelfDeleteException() {
-        super(MESSAGE, HttpStatus.CONFLICT);
+        super(MESSAGE, HttpStatus.FORBIDDEN);
     }
 }

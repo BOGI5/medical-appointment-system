@@ -15,6 +15,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Setter
     @Column(nullable = false)
     private String password;
 
@@ -26,6 +27,9 @@ public class User {
         this.lastName = lastName;
     }
 
+    @Setter
     private String firstName;
+
+    @Setter
     private String lastName;
 }
