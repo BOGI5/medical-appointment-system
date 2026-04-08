@@ -56,15 +56,18 @@ public class UserService {
     }
 
     public void updateCurrentUserPassword(User user, ChangePasswordRequest changePasswordRequest) {
-        if (changePasswordRequest.oldPassword().equals(changePasswordRequest.newPassword())) {
-            throw new SamePasswordException();
-        }
-
         if (!passwordEncoder.matches(
                 changePasswordRequest.oldPassword(),
                 user.getPassword()
         )) {
             throw new InvalidPasswordException();
+        }
+
+        if (passwordEncoder.matches(
+                changePasswordRequest.newPassword(),
+                user.getPassword()
+        )) {
+            throw new SamePasswordException();
         }
 
         user.setPassword(
