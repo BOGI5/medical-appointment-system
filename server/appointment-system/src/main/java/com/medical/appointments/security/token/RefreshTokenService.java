@@ -5,6 +5,7 @@ import com.medical.appointments.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -43,19 +44,17 @@ public class RefreshTokenService {
         return refreshToken;
     }
 
+    @Transactional
     public RefreshToken rotateToken(RefreshToken refreshToken) {
         refreshToken.setActive(false);
         refreshTokenRepository.save(refreshToken);
         return create(refreshToken.getUser());
     }
 
+    @Transactional
     public void revokeToken(String token) {
         RefreshToken refreshToken = validateToken(token);
         refreshToken.setActive(false);
         refreshTokenRepository.save(refreshToken);
-    }
-
-    public void delete(RefreshToken refreshToken) {
-        refreshTokenRepository.delete(refreshToken);
     }
 }

@@ -1,12 +1,10 @@
 package com.medical.appointments.auth;
 
+import com.medical.appointments.auth.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import com.medical.appointments.auth.dto.AuthResponse;
-import com.medical.appointments.auth.dto.LoginRequest;
-import com.medical.appointments.auth.dto.TokenRequest;
-import com.medical.appointments.auth.dto.RegisterRequest;
 
 @RestController
 @RequestMapping("/auth")
@@ -15,6 +13,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody RegisterRequest user) {
         return authService.registerUser(user);
     }
@@ -25,6 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@Valid @RequestBody TokenRequest tokenRequest) {
         authService.logoutUser(tokenRequest);
     }

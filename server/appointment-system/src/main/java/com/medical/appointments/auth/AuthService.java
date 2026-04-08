@@ -1,9 +1,6 @@
 package com.medical.appointments.auth;
 
-import com.medical.appointments.auth.dto.AuthResponse;
-import com.medical.appointments.auth.dto.TokenRequest;
-import com.medical.appointments.auth.dto.LoginRequest;
-import com.medical.appointments.auth.dto.RegisterRequest;
+import com.medical.appointments.auth.dto.*;
 import com.medical.appointments.auth.mapper.AuthMapper;
 import com.medical.appointments.auth.exception.InvalidCredentialsException;
 import com.medical.appointments.security.jwt.JwtService;
@@ -52,10 +49,6 @@ public class AuthService {
 
     public AuthResponse refreshTokens(TokenRequest tokenRequest) {
         RefreshToken oldRefreshToken = refreshTokenService.validateToken(tokenRequest.refreshToken());
-
-        if (!userService.existsByEmail(oldRefreshToken.getUser().getEmail())) {
-            throw new InvalidRefreshTokenException();
-        }
 
         RefreshToken newRefreshToken = refreshTokenService.rotateToken(oldRefreshToken);
 
