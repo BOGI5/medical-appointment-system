@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ExceptionResponse> handleBaseException(BaseException e) {
+    @ExceptionHandler(HttpException.class)
+    public ResponseEntity<ExceptionResponse> handleBaseException(HttpException e) {
         return ResponseEntity.status(e.getHttpStatus()).body(
                 new ExceptionResponse(e.getHttpStatus().value(), e.getHttpStatus().getReasonPhrase(), e.getMessage())
         );

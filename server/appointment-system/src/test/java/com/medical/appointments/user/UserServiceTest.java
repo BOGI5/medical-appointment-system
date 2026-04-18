@@ -1,9 +1,12 @@
 package com.medical.appointments.user;
 
+import com.medical.appointments.exception.InvalidPasswordException;
+import com.medical.appointments.exception.SamePasswordException;
+import com.medical.appointments.exception.SelfDeleteException;
+import com.medical.appointments.exception.UserNotFoundException;
 import com.medical.appointments.user.dto.ChangePasswordRequest;
 import com.medical.appointments.user.dto.UpdateUserRequest;
 import com.medical.appointments.user.dto.UserResponse;
-import com.medical.appointments.user.exception.*;
 import com.medical.appointments.user.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

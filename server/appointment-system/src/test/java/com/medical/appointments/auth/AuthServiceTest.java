@@ -1,16 +1,16 @@
 package com.medical.appointments.auth;
 
 import com.medical.appointments.auth.dto.*;
-import com.medical.appointments.auth.exception.InvalidCredentialsException;
+import com.medical.appointments.exception.InvalidCredentialsException;
 import com.medical.appointments.auth.mapper.AuthMapper;
 import com.medical.appointments.security.jwt.JwtService;
 import com.medical.appointments.security.token.RefreshToken;
 import com.medical.appointments.security.token.RefreshTokenService;
-import com.medical.appointments.security.token.exception.InvalidRefreshTokenException;
+import com.medical.appointments.exception.InvalidRefreshTokenException;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
 import com.medical.appointments.user.dto.UserResponse;
-import com.medical.appointments.user.exception.UserAlreadyExistsException;
+import com.medical.appointments.exception.UserAlreadyExistsException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,10 +1,10 @@
 package com.medical.appointments.user;
 
+import com.medical.appointments.exception.*;
 import com.medical.appointments.user.dto.CreateUser;
 import com.medical.appointments.user.dto.ChangePasswordRequest;
 import com.medical.appointments.user.dto.UpdateUserRequest;
 import com.medical.appointments.user.dto.UserResponse;
-import com.medical.appointments.user.exception.*;
 import com.medical.appointments.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

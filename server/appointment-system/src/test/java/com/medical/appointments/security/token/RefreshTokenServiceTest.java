@@ -1,6 +1,6 @@
 package com.medical.appointments.security.token;
 
-import com.medical.appointments.security.token.exception.InvalidRefreshTokenException;
+import com.medical.appointments.exception.InvalidRefreshTokenException;
 import com.medical.appointments.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

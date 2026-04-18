@@ -28,8 +28,10 @@ public class User {
     }
 
     @Setter
+    @Column(nullable = false)
     private String firstName;
 
     @Setter
+    @Column(nullable = false)
     private String lastName;
 }

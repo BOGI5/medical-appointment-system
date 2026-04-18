@@ -1,6 +1,6 @@
 package com.medical.appointments.security.token;
 
-import com.medical.appointments.security.token.exception.InvalidRefreshTokenException;
+import com.medical.appointments.exception.InvalidRefreshTokenException;
 import com.medical.appointments.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
