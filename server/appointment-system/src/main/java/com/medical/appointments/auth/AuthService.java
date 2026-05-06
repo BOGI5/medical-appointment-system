@@ -7,12 +7,15 @@ import com.medical.appointments.security.jwt.JwtService;
 import com.medical.appointments.security.token.RefreshToken;
 import com.medical.appointments.security.token.RefreshTokenService;
 import com.medical.appointments.exception.InvalidRefreshTokenException;
+import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +44,8 @@ public class AuthService {
     public AuthResponse registerUser(RegisterRequest registerRequest) {
         User user = userService.createUser(authMapper.toCreateUser(
                 registerRequest,
-                hashPassword(registerRequest.password())
+                hashPassword(registerRequest.password()),
+                Set.of(Role.PATIENT)
         ));
 
         return generateAuthResponse(user);
@@ -52,7 +56,8 @@ public class AuthService {
 
         RefreshToken newRefreshToken = refreshTokenService.rotateToken(oldRefreshToken);
 
-        String newAccessToken = jwtService.generateToken(newRefreshToken.getUser());
+        // TODO: Replace hardcoded role to the current role
+        String newAccessToken = jwtService.generateToken(newRefreshToken.getUser(), Role.PATIENT);
 
         return authMapper.toAuthResponse(
                 newRefreshToken.getUser(),
@@ -68,7 +73,8 @@ public class AuthService {
     }
 
     private AuthResponse generateAuthResponse(User user) {
-        String accessToken = jwtService.generateToken(user);
+        // TODO: Replace hardcoded role to the current role
+        String accessToken = jwtService.generateToken(user, Role.PATIENT);
         String refreshToken = refreshTokenService.create(user).getToken();
         return authMapper.toAuthResponse(user, accessToken, refreshToken);
     }

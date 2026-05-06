@@ -6,6 +6,7 @@ import com.medical.appointments.user.dto.ChangePasswordRequest;
 import com.medical.appointments.user.dto.UpdateUserRequest;
 import com.medical.appointments.user.dto.UserResponse;
 import com.medical.appointments.user.mapper.UserMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public User createUser(CreateUser createUser) {
+    public User createUser(@Valid CreateUser createUser) {
         if (userRepository.existsByEmail(createUser.email())) {
             throw new UserAlreadyExistsException();
         }

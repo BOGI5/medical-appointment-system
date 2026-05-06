@@ -1,7 +1,9 @@
 package com.medical.appointments.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,9 +13,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpException.class)
-    public ResponseEntity<ExceptionResponse> handleBaseException(HttpException e) {
+    public ResponseEntity<ExceptionResponse> handleHttpException(HttpException e) {
         return ResponseEntity.status(e.getHttpStatus()).body(
                 new ExceptionResponse(e.getHttpStatus().value(), e.getHttpStatus().getReasonPhrase(), e.getMessage())
+        );
+    }
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAuthorizationDeniedException(AuthorizationDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ExceptionResponse(
+                        HttpStatus.FORBIDDEN.value(),
+                        HttpStatus.FORBIDDEN.getReasonPhrase(),
+                        e.getMessage()
+                )
         );
     }
 
@@ -27,7 +39,11 @@ public class GlobalExceptionHandler {
                 .orElse("Validation error");
 
         return ResponseEntity.badRequest().body(
-                new ExceptionResponse(400, "Bad Request", message)
+                new ExceptionResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        message
+                )
         );
     }
 
@@ -36,7 +52,11 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error", e);
 
         return ResponseEntity.internalServerError().body(
-                new ExceptionResponse(500, "Internal Server Error", "Unexpected error occurred")
+                new ExceptionResponse(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                        "Unexpected error occurred"
+                )
         );
     }
 }

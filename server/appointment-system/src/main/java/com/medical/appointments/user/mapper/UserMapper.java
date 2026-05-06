@@ -15,6 +15,7 @@ public class UserMapper {
         return User.builder()
                 .email(createUser.email())
                 .password(createUser.hashedPassword())
+                .roles(createUser.roles())
                 .firstName(createUser.firstName())
                 .lastName(createUser.lastName())
                 .build();

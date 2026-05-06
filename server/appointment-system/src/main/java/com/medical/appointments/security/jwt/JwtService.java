@@ -1,5 +1,6 @@
 package com.medical.appointments.security.jwt;
 
+import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -7,8 +8,11 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -17,19 +21,40 @@ public class JwtService {
     private String secretKey;
 
     @Value("${access.token.expiration}")
-    private int accessTokenExpirationInMillis;
+    private long accessTokenExpirationInMillis;
 
-    public String generateToken(User user) {
+    private static final String ROLES_CLAIM = "roles";
+    private static final String ACTIVE_ROLE_CLAIM = "activeRole";
+
+    public String generateToken(User user, Role activeRole) {
         return Jwts.builder()
-                .setSubject(user.getEmail())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationInMillis))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .subject(user.getEmail())
+                .claim(ROLES_CLAIM, user.getRoles().stream()
+                        .map(Role::name)
+                        .toList())
+                .claim(ACTIVE_ROLE_CLAIM, activeRole.name())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationInMillis))
+                .signWith(getSignKey())
                 .compact();
     }
 
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
+    }
+
+    public Role extractActiveRole(String token) {
+        String role = extractAllClaims(token).get(ACTIVE_ROLE_CLAIM, String.class);
+        return Role.valueOf(role);
+    }
+
+    public Set<Role> extractRoles(String token) {
+        List<?> roles = extractAllClaims(token).get(ROLES_CLAIM, List.class);
+
+        return roles.stream()
+                .map(Object::toString)
+                .map(Role::valueOf)
+                .collect(Collectors.toSet());
     }
 
     public boolean validateToken(String token) {
@@ -46,14 +71,14 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignKey())
+        return Jwts.parser()
+                .verifyWith(getSignKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    private Key getSignKey() {
+    private SecretKey getSignKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
 }

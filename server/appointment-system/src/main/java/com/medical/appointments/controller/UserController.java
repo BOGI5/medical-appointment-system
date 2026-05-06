@@ -1,6 +1,7 @@
 package com.medical.appointments.controller;
 
 import com.medical.appointments.security.CurrentUserProvider;
+import com.medical.appointments.security.annotation.role.IsAdmin;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
 import com.medical.appointments.user.dto.ChangePasswordRequest;
@@ -31,7 +32,7 @@ public class UserController {
         return userService.updateUser(updateUserRequest, user.getId());
     }
 
-    // TODO: restrict to ADMIN role
+    @IsAdmin
     @PatchMapping(ApiPaths.BY_ID)
     public UserResponse updateUserById(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
         return userService.updateUser(updateUserRequest, id);
@@ -50,7 +51,7 @@ public class UserController {
         userService.deleteCurrentUser(user);
     }
 
-    // TODO: restrict to ADMIN role
+    @IsAdmin
     @DeleteMapping(ApiPaths.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUserById(@PathVariable Long id) {
