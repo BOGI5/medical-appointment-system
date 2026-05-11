@@ -7,11 +7,14 @@ public final class ApiPaths {
     // base
     public static final String AUTH = "/auth";
     public static final String USERS = "/users";
+    public static final String PATIENT_PROFILES = "/patient-profiles";
+
+    // general
+    public static final String CURRENT = "/current";
+    public static final String BY_ID = "/{id}";
 
     // user
-    public static final String CURRENT = "/current";
     public static final String CURRENT_PASSWORD = CURRENT + "/password";
-    public static final String BY_ID = "/{id}";
 
     // auth
     public static final String LOGIN = "/login";

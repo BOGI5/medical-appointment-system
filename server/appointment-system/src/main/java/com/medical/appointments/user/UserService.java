@@ -56,6 +56,24 @@ public class UserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
+    public void addRole(User user, Role role) {
+        if (!userRepository.existsById(user.getId())) {
+            throw new UserNotFoundException();
+        }
+
+        user.addRole(role);
+        userRepository.save(user);
+    }
+
+    public void removeRole(User user, Role role) {
+        if (!userRepository.existsById(user.getId())) {
+            throw new UserNotFoundException();
+        }
+
+        user.removeRole(role);
+        userRepository.save(user);
+    }
+
     public void updateCurrentUserPassword(User user, ChangePasswordRequest changePasswordRequest) {
         if (!passwordEncoder.matches(
                 changePasswordRequest.oldPassword(),

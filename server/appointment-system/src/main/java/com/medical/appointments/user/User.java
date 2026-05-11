@@ -1,5 +1,7 @@
 package com.medical.appointments.user;
 
+import com.medical.appointments.exception.UserMustHaveAtLeastOneRoleException;
+import com.medical.appointments.exception.RoleAlreadyAssignedException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +35,10 @@ public class User {
             throw new IllegalArgumentException("Role cannot be null");
         }
 
+        if (this.roles.contains(role)) {
+            throw new RoleAlreadyAssignedException();
+        }
+
         this.roles.add(role);
     }
 
@@ -40,7 +46,7 @@ public class User {
         if (!this.roles.contains(role)) return;
 
         if (this.roles.size() == 1) {
-            throw new IllegalStateException("User must have at least one role");
+            throw new UserMustHaveAtLeastOneRoleException();
         }
 
         this.roles.remove(role);
@@ -49,7 +55,7 @@ public class User {
     @Builder
     public User(String email, String password, String firstName, String lastName, Set<Role> roles) {
         if (roles == null || roles.isEmpty()) {
-            throw new IllegalArgumentException("User must have at least one role");
+            throw new UserMustHaveAtLeastOneRoleException();
         }
 
         this.email = email;

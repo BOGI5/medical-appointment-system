@@ -3,6 +3,7 @@ package com.medical.appointments.auth;
 import com.medical.appointments.auth.dto.*;
 import com.medical.appointments.auth.mapper.AuthMapper;
 import com.medical.appointments.exception.InvalidCredentialsException;
+import com.medical.appointments.roles.patient.PatientProfileService;
 import com.medical.appointments.security.jwt.JwtService;
 import com.medical.appointments.security.token.RefreshToken;
 import com.medical.appointments.security.token.RefreshTokenService;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -25,6 +27,7 @@ public class AuthService {
     private final UserService userService;
     private final JwtService jwtService;
     private final AuthMapper authMapper;
+    private final PatientProfileService patientProfileService;
 
     private String hashPassword(String password) {
         return passwordEncoder.encode(password);
@@ -41,12 +44,15 @@ public class AuthService {
         return generateAuthResponse(user);
     }
 
+    @Transactional
     public AuthResponse registerUser(RegisterRequest registerRequest) {
         User user = userService.createUser(authMapper.toCreateUser(
                 registerRequest,
                 hashPassword(registerRequest.password()),
                 Set.of(Role.PATIENT)
         ));
+
+        patientProfileService.create(authMapper.toCreatePatientProfile(user));
 
         return generateAuthResponse(user);
     }
