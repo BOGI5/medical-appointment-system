@@ -2,7 +2,7 @@ package com.medical.appointments.auth.mapper;
 
 import com.medical.appointments.auth.dto.AuthResponse;
 import com.medical.appointments.auth.dto.RegisterRequest;
-import com.medical.appointments.roles.patient.dto.CreatePatientProfile;
+import com.medical.appointments.profiles.patient.dto.CreatePatientProfile;
 import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.dto.CreateUser;

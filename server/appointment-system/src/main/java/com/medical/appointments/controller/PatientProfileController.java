@@ -1,8 +1,8 @@
 package com.medical.appointments.controller;
 
-import com.medical.appointments.roles.patient.PatientProfileService;
-import com.medical.appointments.roles.patient.dto.PatientProfileResponse;
-import com.medical.appointments.roles.patient.dto.UpdatePatientProfile;
+import com.medical.appointments.profiles.patient.PatientProfileService;
+import com.medical.appointments.profiles.patient.dto.PatientProfileResponse;
+import com.medical.appointments.profiles.patient.dto.UpdatePatientProfile;
 import com.medical.appointments.security.CurrentUserProvider;
 import com.medical.appointments.security.annotation.role.IsAdmin;
 import com.medical.appointments.security.annotation.role.IsAdminOrDoctor;

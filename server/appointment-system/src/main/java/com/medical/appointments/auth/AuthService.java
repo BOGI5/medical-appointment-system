@@ -3,7 +3,7 @@ package com.medical.appointments.auth;
 import com.medical.appointments.auth.dto.*;
 import com.medical.appointments.auth.mapper.AuthMapper;
 import com.medical.appointments.exception.InvalidCredentialsException;
-import com.medical.appointments.roles.patient.PatientProfileService;
+import com.medical.appointments.profiles.patient.PatientProfileService;
 import com.medical.appointments.security.jwt.JwtService;
 import com.medical.appointments.security.token.RefreshToken;
 import com.medical.appointments.security.token.RefreshTokenService;

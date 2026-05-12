@@ -19,7 +19,7 @@ public final class ErrorMessages {
     // token
     public static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
 
-    // patient profile
-    public static final String PATIENT_PROFILE_NOT_FOUND = "Patient profile not found";
-    public static final String PATIENT_PROFILE_ALREADY_EXISTS = "Patient profile already exists";
+    // profile
+    public static final String PROFILE_NOT_FOUND = "Profile not found";
+    public static final String PROFILE_ALREADY_EXISTS = "Profile already exists";
 }
