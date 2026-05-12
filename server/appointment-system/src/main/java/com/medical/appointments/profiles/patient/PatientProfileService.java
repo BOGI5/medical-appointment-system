@@ -38,7 +38,7 @@ public class PatientProfileService extends ProfileService<
     @Transactional
     public PatientProfileResponse createForExistingUser(User user) {
         userService.addRole(user, getRole());
-        return mapper.toResponse(create(new CreatePatientProfile(user)));
+        return create(new CreatePatientProfile(user));
     }
 
     @Override

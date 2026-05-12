@@ -32,12 +32,12 @@ public abstract class ProfileService<
 
     public abstract R updateById(U updateProfile, Long id);
 
-    public E create(C createProfile) {
+    public R create(C createProfile) {
         if (repository.existsByUser(createProfile.user())) {
             throw new ProfileAlreadyExistsException();
         }
 
-        return repository.save(mapper.toEntity(createProfile));
+        return mapper.toResponse(repository.save(mapper.toEntity(createProfile)));
     }
 
     public List<R> findAll() {

@@ -23,39 +23,39 @@ public class UserController {
 
     @GetMapping(ApiPaths.CURRENT)
     public UserResponse getCurrentUser() {
-        return userMapper.toResponse(currentUserProvider.getCurrentUser());
+        return userMapper.toResponse(currentUserProvider.getCurrent());
     }
 
     @PatchMapping(ApiPaths.CURRENT)
-    public UserResponse updateCurrentUser(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
-        User user = currentUserProvider.getCurrentUser();
-        return userService.updateUser(updateUserRequest, user.getId());
+    public UserResponse updateCurrent(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        User user = currentUserProvider.getCurrent();
+        return userService.update(updateUserRequest, user.getId());
     }
 
     @IsAdmin
     @PatchMapping(ApiPaths.BY_ID)
-    public UserResponse updateUserById(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
-        return userService.updateUser(updateUserRequest, id);
+    public UserResponse updateById(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        return userService.update(updateUserRequest, id);
     }
 
     @PatchMapping(ApiPaths.CURRENT_PASSWORD)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCurrentUserPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
-        userService.updateCurrentUserPassword(currentUserProvider.getCurrentUser(), changePasswordRequest);
+    public void updateCurrentPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+        userService.updateCurrentPassword(currentUserProvider.getCurrent(), changePasswordRequest);
     }
 
     @DeleteMapping(ApiPaths.CURRENT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCurrentUser() {
-        User user = currentUserProvider.getCurrentUser();
-        userService.deleteCurrentUser(user);
+    public void deleteCurrent() {
+        User user = currentUserProvider.getCurrent();
+        userService.deleteCurrent(user);
     }
 
     @IsAdmin
     @DeleteMapping(ApiPaths.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUserById(@PathVariable Long id) {
-        User issuer = currentUserProvider.getCurrentUser();
-        userService.deleteUserById(issuer.getId(), id);
+    public void deleteById(@PathVariable Long id) {
+        User issuer = currentUserProvider.getCurrent();
+        userService.deleteById(issuer.getId(), id);
     }
 }

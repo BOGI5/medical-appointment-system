@@ -8,6 +8,7 @@ public final class ApiPaths {
     public static final String AUTH = "/auth";
     public static final String USERS = "/users";
     public static final String PATIENT_PROFILES = "/patient-profiles";
+    public static final String DOCTOR_PROFILES = "/doctor-profiles";
 
     // general
     public static final String CURRENT = "/current";

@@ -25,7 +25,7 @@ public class PatientProfileController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PatientProfileResponse create() {
-        return patientProfileService.createForExistingUser(currentUserProvider.getCurrentUser());
+        return patientProfileService.createForExistingUser(currentUserProvider.getCurrent());
     }
 
     // TODO: pagination, filtering, etc.
@@ -38,7 +38,7 @@ public class PatientProfileController {
     @IsPatient
     @GetMapping(ApiPaths.CURRENT)
     public PatientProfileResponse getCurrent() {
-        return patientProfileService.findByUser(currentUserProvider.getCurrentUser());
+        return patientProfileService.findByUser(currentUserProvider.getCurrent());
     }
 
     @IsAdminOrDoctor
@@ -54,7 +54,7 @@ public class PatientProfileController {
     ) {
         return patientProfileService.updateById(
                 updatePatientProfile,
-                currentUserProvider.getCurrentUser().getId()
+                currentUserProvider.getCurrent().getId()
         );
     }
 
@@ -71,7 +71,7 @@ public class PatientProfileController {
     @DeleteMapping(ApiPaths.CURRENT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCurrent() {
-        patientProfileService.deleteById(currentUserProvider.getCurrentUser().getId());
+        patientProfileService.deleteById(currentUserProvider.getCurrent().getId());
     }
 
     @IsAdmin

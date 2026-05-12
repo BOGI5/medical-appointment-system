@@ -46,7 +46,7 @@ public class AuthService {
 
     @Transactional
     public AuthResponse registerUser(RegisterRequest registerRequest) {
-        User user = userService.createUser(authMapper.toCreateUser(
+        User user = userService.create(authMapper.toCreateUser(
                 registerRequest,
                 hashPassword(registerRequest.password()),
                 Set.of(Role.PATIENT)

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 public class PatientProfileMapper implements ProfileMapper<PatientProfile, PatientProfileResponse, CreatePatientProfile> {
     private final UserMapper userMapper;
 
-    public PatientProfile toEntity(CreatePatientProfile createPatientProfile) {
-        return new PatientProfile(createPatientProfile.user());
+    public PatientProfile toEntity(CreatePatientProfile createProfile) {
+        return new PatientProfile(createProfile.user());
     }
 
     public PatientProfileResponse toResponse(PatientProfile profile) {

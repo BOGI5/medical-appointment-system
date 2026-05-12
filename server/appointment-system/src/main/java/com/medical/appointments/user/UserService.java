@@ -33,14 +33,19 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public User createUser(@Valid CreateUser createUser) {
+    public User create(@Valid CreateUser createUser) {
         if (userRepository.existsByEmail(createUser.email())) {
             throw new UserAlreadyExistsException();
         }
+
+        if (createUser.roles() == null || createUser.roles().isEmpty()) {
+            throw new UserMustHaveAtLeastOneRoleException();
+        }
+
         return userRepository.save(userMapper.toEntity(createUser));
     }
 
-    public UserResponse updateUser(UpdateUserRequest updateUserRequest, Long id) {
+    public UserResponse update(UpdateUserRequest updateUserRequest, Long id) {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
         String firstName = updateUserRequest.firstName();
@@ -74,7 +79,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void updateCurrentUserPassword(User user, ChangePasswordRequest changePasswordRequest) {
+    public void updateCurrentPassword(User user, ChangePasswordRequest changePasswordRequest) {
         if (!passwordEncoder.matches(
                 changePasswordRequest.oldPassword(),
                 user.getPassword()
@@ -96,11 +101,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void deleteCurrentUser(User user) {
+    public void deleteCurrent(User user) {
         userRepository.delete(user);
     }
 
-    public void deleteUserById(Long issuerId, Long id) {
+    public void deleteById(Long issuerId, Long id) {
         if (issuerId.equals(id)) {
             throw new SelfDeleteException();
         }

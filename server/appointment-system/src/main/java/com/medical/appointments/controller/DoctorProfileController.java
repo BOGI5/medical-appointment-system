@@ -1,0 +1,79 @@
+package com.medical.appointments.controller;
+
+import com.medical.appointments.profiles.doctor.DoctorProfileService;
+import com.medical.appointments.profiles.doctor.dto.CreateDoctorProfile;
+import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfile;
+import com.medical.appointments.profiles.doctor.dto.DoctorProfileResponse;
+import com.medical.appointments.profiles.doctor.dto.UpdateDoctorProfile;
+import com.medical.appointments.security.CurrentUserProvider;
+import com.medical.appointments.security.annotation.role.IsAdmin;
+import com.medical.appointments.security.annotation.role.IsDoctor;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(ApiPaths.DOCTOR_PROFILES)
+@RequiredArgsConstructor
+public class DoctorProfileController {
+    private final DoctorProfileService doctorProfileService;
+    private final CurrentUserProvider currentUserProvider;
+
+    @IsAdmin
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public DoctorProfileResponse create(@Valid @RequestBody CreateUserAndDoctorProfile createUserAndDoctorProfile) {
+        return doctorProfileService.createUserAndProfile(createUserAndDoctorProfile);
+    }
+
+    @IsDoctor
+    @GetMapping(ApiPaths.CURRENT)
+    public DoctorProfileResponse getCurrent() {
+        return doctorProfileService.findByUser(currentUserProvider.getCurrent());
+    }
+
+    @IsAdmin
+    @GetMapping(ApiPaths.BY_ID)
+    public DoctorProfileResponse getById(@PathVariable Long id) {
+        return doctorProfileService.findById(id);
+    }
+
+    // TODO: pagination, filtering, etc.
+    @IsAdmin
+    @GetMapping
+    public List<DoctorProfileResponse> getAll() {
+        return doctorProfileService.findAll();
+    }
+
+    @IsDoctor
+    @PatchMapping(ApiPaths.CURRENT)
+    public DoctorProfileResponse updateCurrent(@Valid @RequestBody UpdateDoctorProfile updateDoctorProfile) {
+        return doctorProfileService.updateById(updateDoctorProfile, currentUserProvider.getCurrent().getId());
+    }
+
+    @IsAdmin
+    @PatchMapping(ApiPaths.BY_ID)
+    public DoctorProfileResponse updateById(
+            @RequestBody @Valid UpdateDoctorProfile updateDoctorProfile,
+            @PathVariable Long id
+    ) {
+        return doctorProfileService.updateById(updateDoctorProfile, id);
+    }
+
+    @IsDoctor
+    @DeleteMapping(ApiPaths.CURRENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCurrent() {
+        doctorProfileService.deleteById(currentUserProvider.getCurrent().getId());
+    }
+
+    @IsAdmin
+    @DeleteMapping(ApiPaths.BY_ID)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id) {
+        doctorProfileService.deleteById(id);
+    }
+}
