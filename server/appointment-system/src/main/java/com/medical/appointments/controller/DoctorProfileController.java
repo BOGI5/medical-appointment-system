@@ -9,6 +9,7 @@ import com.medical.appointments.security.annotation.role.IsAdmin;
 import com.medical.appointments.security.annotation.role.IsDoctor;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,7 @@ public class DoctorProfileController {
     }
 
     @GetMapping
-    public Page<DoctorProfileResponse> getAll(Pageable pageable) {
+    public Page<DoctorProfileResponse> getAll(@ParameterObject Pageable pageable) {
         return doctorProfileService.findAll(pageable);
     }
 
