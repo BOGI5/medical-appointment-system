@@ -10,9 +10,9 @@ import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 public abstract class ProfileService<
@@ -40,8 +40,8 @@ public abstract class ProfileService<
         return mapper.toResponse(repository.save(mapper.toEntity(createProfile)));
     }
 
-    public List<R> findAll() {
-        return repository.findAll().stream().map(mapper::toResponse).toList();
+    public Page<R> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(mapper::toResponse);
     }
 
     public R findById(Long id) {

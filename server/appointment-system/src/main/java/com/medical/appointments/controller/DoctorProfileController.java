@@ -9,10 +9,10 @@ import com.medical.appointments.security.annotation.role.IsAdmin;
 import com.medical.appointments.security.annotation.role.IsDoctor;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(ApiPaths.DOCTOR_PROFILES)
@@ -34,17 +34,14 @@ public class DoctorProfileController {
         return doctorProfileService.findByUser(currentUserProvider.getCurrent());
     }
 
-    @IsAdmin
     @GetMapping(ApiPaths.BY_ID)
     public DoctorProfileResponse getById(@PathVariable Long id) {
         return doctorProfileService.findById(id);
     }
 
-    // TODO: pagination, filtering, etc.
-    @IsAdmin
     @GetMapping
-    public List<DoctorProfileResponse> getAll() {
-        return doctorProfileService.findAll();
+    public Page<DoctorProfileResponse> getAll(Pageable pageable) {
+        return doctorProfileService.findAll(pageable);
     }
 
     @IsDoctor

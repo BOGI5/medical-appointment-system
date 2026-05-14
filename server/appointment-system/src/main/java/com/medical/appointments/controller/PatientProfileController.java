@@ -9,10 +9,10 @@ import com.medical.appointments.security.annotation.role.IsAdminOrDoctor;
 import com.medical.appointments.security.annotation.role.IsPatient;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(ApiPaths.PATIENT_PROFILES)
@@ -28,11 +28,10 @@ public class PatientProfileController {
         return patientProfileService.createForExistingUser(currentUserProvider.getCurrent());
     }
 
-    // TODO: pagination, filtering, etc.
     @IsAdminOrDoctor
     @GetMapping
-    public List<PatientProfileResponse> getAll() {
-        return patientProfileService.findAll();
+    public Page<PatientProfileResponse> getAll(Pageable pageable) {
+        return patientProfileService.findAll(pageable);
     }
 
     @IsPatient
