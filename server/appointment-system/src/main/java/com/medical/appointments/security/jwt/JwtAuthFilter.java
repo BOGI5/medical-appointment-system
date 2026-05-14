@@ -45,12 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String email = jwtService.extractEmail(token);
         Role activeRole = jwtService.extractActiveRole(token);
 
-        if (email == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (activeRole == null) {
+        if (email == null || activeRole == null) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -61,7 +56,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         userService.findOptionalByEmail(email).ifPresent(user -> {
-            if (!user.getRoles().contains(activeRole)) return;
+            if (!user.getRoles().contains(activeRole) || !user.getActiveRole().equals(activeRole)) return;
 
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(

@@ -20,13 +20,40 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private boolean passwordMatches(String password, String hashedPassword) {
+        return passwordEncoder.matches(password, hashedPassword);
+    }
+
+    private String hashPassword(String password) {
+        return passwordEncoder.encode(password);
+    }
+
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
     }
 
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+    }
+
     public Optional<User> findOptionalByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public User findAndCheckCredentials(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(InvalidCredentialsException::new);
+
+        if (!passwordMatches(password, user.getPassword())) {
+            throw new InvalidCredentialsException();
+        }
+
+        return user;
+    }
+
+    public boolean existsByRole(Role role) {
+        return userRepository.existsByRolesContains(role);
     }
 
     public boolean existsByEmail(String email) {
@@ -38,15 +65,17 @@ public class UserService {
             throw new UserAlreadyExistsException();
         }
 
-        if (createUser.roles() == null || createUser.roles().isEmpty()) {
-            throw new UserMustHaveAtLeastOneRoleException();
-        }
+        return userRepository.save(userMapper.toEntity(createUser, hashPassword(createUser.password())));
+    }
 
-        return userRepository.save(userMapper.toEntity(createUser));
+    public User switchRole(Role role, Long id) {
+        User user = findById(id);
+        user.setActiveRole(role);
+        return userRepository.save(user);
     }
 
     public UserResponse update(UpdateUserRequest updateUserRequest, Long id) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        User user = findById(id);
 
         String firstName = updateUserRequest.firstName();
         if (firstName != null && !firstName.isBlank()) {
@@ -61,18 +90,18 @@ public class UserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
-    public void addRole(User user, Role role) {
-        if (!userRepository.existsById(user.getId())) {
-            throw new UserNotFoundException();
-        }
-
+    public User addRole(User user, Role role) {
         user.addRole(role);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public void removeRole(User user, Role role) {
-        if (!userRepository.existsById(user.getId())) {
-            throw new UserNotFoundException();
+        if (
+                role == Role.ADMIN
+                && user.getRoles().contains(Role.ADMIN)
+                && userRepository.countByRolesContains(Role.ADMIN) == 1
+        ) {
+                throw new CannotRemoveLastAdminException();
         }
 
         user.removeRole(role);
@@ -80,28 +109,30 @@ public class UserService {
     }
 
     public void updateCurrentPassword(User user, ChangePasswordRequest changePasswordRequest) {
-        if (!passwordEncoder.matches(
+        if (!passwordMatches(
                 changePasswordRequest.oldPassword(),
                 user.getPassword()
         )) {
             throw new InvalidPasswordException();
         }
 
-        if (passwordEncoder.matches(
+        if (passwordMatches(
                 changePasswordRequest.newPassword(),
                 user.getPassword()
         )) {
             throw new SamePasswordException();
         }
 
-        user.setPassword(
-                passwordEncoder.encode(changePasswordRequest.newPassword())
-        );
+        user.setPassword(hashPassword(changePasswordRequest.newPassword()));
 
         userRepository.save(user);
     }
 
     public void deleteCurrent(User user) {
+        if (user.getRoles().contains(Role.ADMIN) && userRepository.countByRolesContains(Role.ADMIN) == 1) {
+                throw new CannotRemoveLastAdminException();
+        }
+
         userRepository.delete(user);
     }
 
@@ -110,7 +141,11 @@ public class UserService {
             throw new SelfDeleteException();
         }
 
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        User user = findById(id);
+
+        if (user.getRoles().contains(Role.ADMIN) && userRepository.countByRolesContains(Role.ADMIN) == 1) {
+            throw new CannotRemoveLastAdminException();
+        }
 
         userRepository.delete(user);
     }

@@ -1,8 +1,7 @@
 package com.medical.appointments.controller;
 
 import com.medical.appointments.profiles.doctor.DoctorProfileService;
-import com.medical.appointments.profiles.doctor.dto.CreateDoctorProfile;
-import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfile;
+import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfileRequest;
 import com.medical.appointments.profiles.doctor.dto.DoctorProfileResponse;
 import com.medical.appointments.profiles.doctor.dto.UpdateDoctorProfile;
 import com.medical.appointments.security.CurrentUserProvider;
@@ -25,8 +24,8 @@ public class DoctorProfileController {
     @IsAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DoctorProfileResponse create(@Valid @RequestBody CreateUserAndDoctorProfile createUserAndDoctorProfile) {
-        return doctorProfileService.createUserAndProfile(createUserAndDoctorProfile);
+    public DoctorProfileResponse create(@Valid @RequestBody CreateUserAndDoctorProfileRequest createUserAndDoctorProfileRequest) {
+        return doctorProfileService.createUserAndProfile(createUserAndDoctorProfileRequest);
     }
 
     @IsDoctor

@@ -19,6 +19,8 @@ public class PatientProfile extends Profile {
     @Setter
     private String phone;
 
+    // TODO: This field is temporary. Medical history should eventually be generated
+    // from completed appointments, diagnoses, prescriptions, and doctor notes.
     @Column(length = 2000)
     private String medicalHistory;
 

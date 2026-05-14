@@ -12,6 +12,8 @@ public final class ErrorMessages {
     public static final String SELF_DELETE = "You cannot delete your own account. Use DELETE /users/current instead";
     public static final String USER_MUST_HAVE_AT_LEAST_ONE_ROLE = "User must have at least one role";
     public static final String ROLE_ALREADY_ASSIGNED = "Role already assigned";
+    public static final String ROLE_NOT_ASSIGNED = "Role not assigned";
+    public static final String CANNOT_REMOVE_LAST_ADMIN = "Cannot remove the last administrator";
 
     // auth
     public static final String INVALID_CREDENTIALS = "Invalid credentials";

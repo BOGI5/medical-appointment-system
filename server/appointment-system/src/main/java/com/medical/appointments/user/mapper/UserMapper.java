@@ -8,14 +8,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
     public UserResponse toResponse(User user) {
-        return new UserResponse(user.getId(),  user.getEmail(), user.getFirstName(), user.getLastName());
+        return new UserResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRoles(),
+                user.getActiveRole()
+        );
     }
 
-    public User toEntity(CreateUser createUser) {
+    public User toEntity(CreateUser createUser, String hashedPassword) {
         return User.builder()
                 .email(createUser.email())
-                .password(createUser.hashedPassword())
+                .password(hashedPassword)
                 .roles(createUser.roles())
+                .activeRole(createUser.activeRole())
                 .firstName(createUser.firstName())
                 .lastName(createUser.lastName())
                 .build();

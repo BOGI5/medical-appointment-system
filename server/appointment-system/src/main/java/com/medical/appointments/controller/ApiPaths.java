@@ -7,6 +7,7 @@ public final class ApiPaths {
     // base
     public static final String AUTH = "/auth";
     public static final String USERS = "/users";
+    public static final String ADMIN = "/admin";
     public static final String PATIENT_PROFILES = "/patient-profiles";
     public static final String DOCTOR_PROFILES = "/doctor-profiles";
 
@@ -22,4 +23,5 @@ public final class ApiPaths {
     public static final String REGISTER = "/register";
     public static final String LOGOUT = "/logout";
     public static final String REFRESH = "/refresh";
+    public static final String SWITCH_ROLE = "/switch-role";
 }

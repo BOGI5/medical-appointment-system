@@ -2,11 +2,16 @@ package com.medical.appointments.profiles.doctor.mapper;
 
 import com.medical.appointments.profiles.doctor.DoctorProfile;
 import com.medical.appointments.profiles.doctor.dto.CreateDoctorProfile;
+import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfileRequest;
 import com.medical.appointments.profiles.doctor.dto.DoctorProfileResponse;
 import com.medical.appointments.profiles.profile.mapper.ProfileMapper;
+import com.medical.appointments.user.Role;
+import com.medical.appointments.user.dto.CreateUser;
 import com.medical.appointments.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -29,5 +34,16 @@ public class DoctorProfileMapper implements ProfileMapper<DoctorProfile, DoctorP
     @Override
     public DoctorProfile toEntity(CreateDoctorProfile createProfile) {
         return new DoctorProfile(createProfile.user());
+    }
+
+    public CreateUser toCreateUser(CreateUserAndDoctorProfileRequest createUserAndDoctorProfileRequest) {
+        return new CreateUser(
+                createUserAndDoctorProfileRequest.email(),
+                createUserAndDoctorProfileRequest.password(),
+                Set.of(Role.DOCTOR),
+                Role.DOCTOR,
+                createUserAndDoctorProfileRequest.firstName(),
+                createUserAndDoctorProfileRequest.lastName()
+        );
     }
 }

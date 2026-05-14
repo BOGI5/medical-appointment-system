@@ -8,6 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.stream.Collectors;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,6 +20,7 @@ public class GlobalExceptionHandler {
                 new ExceptionResponse(e.getHttpStatus().value(), e.getHttpStatus().getReasonPhrase(), e.getMessage())
         );
     }
+
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ExceptionResponse> handleAuthorizationDeniedException(AuthorizationDeniedException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
@@ -34,9 +37,8 @@ public class GlobalExceptionHandler {
         String message = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .findFirst()
                 .map(error -> error.getField() + " " + error.getDefaultMessage())
-                .orElse("Validation error");
+                .collect(Collectors.joining(", "));
 
         return ResponseEntity.badRequest().body(
                 new ExceptionResponse(

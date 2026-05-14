@@ -2,6 +2,7 @@ package com.medical.appointments.controller;
 
 import com.medical.appointments.auth.AuthService;
 import com.medical.appointments.auth.dto.*;
+import com.medical.appointments.security.CurrentUserProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final CurrentUserProvider currentUserProvider;
 
     @PostMapping(ApiPaths.REGISTER)
     @ResponseStatus(HttpStatus.CREATED)
@@ -33,5 +35,10 @@ public class AuthController {
     @PostMapping(ApiPaths.REFRESH)
     public AuthResponse refreshToken(@Valid @RequestBody TokenRequest tokenRequest) {
         return authService.refreshTokens(tokenRequest);
+    }
+
+    @PostMapping(ApiPaths.SWITCH_ROLE)
+    public AuthResponse switchRole(@Valid @RequestBody SwitchRoleRequest switchRoleRequest) {
+        return authService.switchCurrentUserRole(switchRoleRequest, currentUserProvider.getCurrent());
     }
 }

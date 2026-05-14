@@ -1,5 +1,6 @@
 package com.medical.appointments.security.config;
 
+import com.medical.appointments.controller.ApiPaths;
 import com.medical.appointments.security.jwt.JwtAuthFilter;
 import com.medical.appointments.security.response.SecurityErrorResponseWriter;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/auth/**"
+                                ApiPaths.AUTH + ApiPaths.REGISTER,
+                                ApiPaths.AUTH + ApiPaths.LOGIN,
+                                ApiPaths.AUTH + ApiPaths.REFRESH
                         )
                         .permitAll()
                         .anyRequest().authenticated()

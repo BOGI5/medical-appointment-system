@@ -26,13 +26,13 @@ public class JwtService {
     private static final String ROLES_CLAIM = "roles";
     private static final String ACTIVE_ROLE_CLAIM = "activeRole";
 
-    public String generateToken(User user, Role activeRole) {
+    public String generateToken(User user) {
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim(ROLES_CLAIM, user.getRoles().stream()
                         .map(Role::name)
                         .toList())
-                .claim(ACTIVE_ROLE_CLAIM, activeRole.name())
+                .claim(ACTIVE_ROLE_CLAIM, user.getActiveRole().name())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationInMillis))
                 .signWith(getSignKey())
@@ -44,8 +44,12 @@ public class JwtService {
     }
 
     public Role extractActiveRole(String token) {
-        String role = extractAllClaims(token).get(ACTIVE_ROLE_CLAIM, String.class);
-        return Role.valueOf(role);
+        try {
+            String role = extractAllClaims(token).get(ACTIVE_ROLE_CLAIM, String.class);
+            return Role.valueOf(role);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     public Set<Role> extractRoles(String token) {

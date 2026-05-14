@@ -2,7 +2,7 @@ package com.medical.appointments.profiles.doctor;
 
 import com.medical.appointments.exception.ProfileNotFoundException;
 import com.medical.appointments.profiles.doctor.dto.CreateDoctorProfile;
-import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfile;
+import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfileRequest;
 import com.medical.appointments.profiles.doctor.dto.DoctorProfileResponse;
 import com.medical.appointments.profiles.doctor.dto.UpdateDoctorProfile;
 import com.medical.appointments.profiles.doctor.mapper.DoctorProfileMapper;
@@ -12,8 +12,6 @@ import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 @Service
 public class DoctorProfileService extends ProfileService<
@@ -35,9 +33,10 @@ public class DoctorProfileService extends ProfileService<
     }
 
     @Transactional
-    public DoctorProfileResponse createUserAndProfile(CreateUserAndDoctorProfile createUserAndDoctorProfile) {
-        createUserAndDoctorProfile.user().addRoles(Set.of(getRole()));
-        User user = userService.create(createUserAndDoctorProfile.user());
+    public DoctorProfileResponse createUserAndProfile(
+            CreateUserAndDoctorProfileRequest createUserAndDoctorProfileRequest
+    ) {
+        User user = userService.create(mapper.toCreateUser(createUserAndDoctorProfileRequest));
         return create(new CreateDoctorProfile(user));
     }
 
@@ -61,7 +60,7 @@ public class DoctorProfileService extends ProfileService<
             profile.setBio(updateProfile.bio());
         }
 
-        if (updateProfile.yearsOfExperience() != null && updateProfile.yearsOfExperience() >= 0) {
+        if (updateProfile.yearsOfExperience() != null) {
             profile.setYearsOfExperience(updateProfile.yearsOfExperience());
         }
 
