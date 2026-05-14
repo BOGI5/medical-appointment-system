@@ -24,4 +24,8 @@ public final class ErrorMessages {
     // profile
     public static final String PROFILE_NOT_FOUND = "Profile not found";
     public static final String PROFILE_ALREADY_EXISTS = "Profile already exists";
+
+    // reference
+    public static final String REFERENCE_ALREADY_EXISTS = "Reference already exists";
+    public static final String REFERENCE_NOT_FOUND = "Reference not found";
 }

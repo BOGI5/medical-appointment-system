@@ -10,6 +10,8 @@ public final class ApiPaths {
     public static final String ADMIN = "/admin";
     public static final String PATIENT_PROFILES = "/patient-profiles";
     public static final String DOCTOR_PROFILES = "/doctor-profiles";
+    public static final String ALLERGIES = "/allergies";
+    public static final String SPECIALIZATIONS = "/specializations";
 
     // general
     public static final String CURRENT = "/current";
