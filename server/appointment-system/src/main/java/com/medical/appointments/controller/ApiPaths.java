@@ -28,6 +28,7 @@ public final class ApiPaths {
     public static final String SWITCH_ROLE = "/switch-role";
 
     // patient profile
-    public static final String CURRENT_ALLERGIES_BY_ID = CURRENT + ALLERGIES + BY_ID;
-    public static final String BY_ID_ALLERGY_BY_ID = BY_ID + ALLERGIES + "/{allergyId}";
+    public static final String ALLERGY_ID = "/{allergyId}";
+    public static final String CURRENT_ALLERGIES_BY_ID = CURRENT + ALLERGIES + ALLERGY_ID;
+    public static final String BY_ID_ALLERGY_BY_ID = BY_ID + ALLERGIES + ALLERGY_ID;
 }

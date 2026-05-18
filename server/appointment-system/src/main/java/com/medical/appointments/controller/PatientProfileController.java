@@ -60,8 +60,8 @@ public class PatientProfileController {
 
     @IsPatient
     @PostMapping(ApiPaths.CURRENT_ALLERGIES_BY_ID)
-    public PatientProfileResponse addAllergyToCurrent(@PathVariable Long id) {
-        return patientProfileService.addAllergyById(id, currentUserProvider.getCurrent().getId());
+    public PatientProfileResponse addAllergyToCurrent(@PathVariable Long allergyId) {
+        return patientProfileService.addAllergyById(allergyId, currentUserProvider.getCurrent().getId());
     }
 
     @IsAdmin
