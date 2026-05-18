@@ -5,6 +5,7 @@ import com.medical.appointments.profiles.doctor.dto.CreateDoctorProfile;
 import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfileRequest;
 import com.medical.appointments.profiles.doctor.dto.DoctorProfileResponse;
 import com.medical.appointments.profiles.profile.mapper.ProfileMapper;
+import com.medical.appointments.references.specialization.mapper.SpecializationMapper;
 import com.medical.appointments.user.Role;
 import com.medical.appointments.user.dto.CreateUser;
 import com.medical.appointments.user.mapper.UserMapper;
@@ -17,13 +18,16 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class DoctorProfileMapper implements ProfileMapper<DoctorProfile, DoctorProfileResponse, CreateDoctorProfile> {
     private final UserMapper userMapper;
+    private final SpecializationMapper specializationMapper;
 
     @Override
     public DoctorProfileResponse toResponse(DoctorProfile profile) {
         return new DoctorProfileResponse(
                 userMapper.toResponse(profile.getUser()),
                 profile.getId(),
-                profile.getSpecialization(),
+                profile.getSpecialization() == null
+                    ? null
+                    : specializationMapper.toResponse(profile.getSpecialization()),
                 profile.getPhone(),
                 profile.getClinicAddress(),
                 profile.getBio(),

@@ -34,7 +34,11 @@ public abstract class ReferenceService<
     }
 
     public R findById(Long id) {
-        return mapper.toResponse(repository.findById(id).orElseThrow(ReferenceNotFoundException::new));
+        return mapper.toResponse(findEntityById(id));
+    }
+
+    public E findEntityById(Long id) {
+        return repository.findById(id).orElseThrow(ReferenceNotFoundException::new);
     }
 
     public void deleteById(Long id) {

@@ -58,6 +58,12 @@ public class PatientProfileController {
         );
     }
 
+    @IsPatient
+    @PostMapping(ApiPaths.CURRENT_ALLERGIES_BY_ID)
+    public PatientProfileResponse addAllergyToCurrent(@PathVariable Long id) {
+        return patientProfileService.addAllergyById(id, currentUserProvider.getCurrent().getId());
+    }
+
     @IsAdmin
     @PatchMapping(ApiPaths.BY_ID)
     public PatientProfileResponse updateById(
@@ -67,6 +73,12 @@ public class PatientProfileController {
         return patientProfileService.updateById(updatePatientProfile, id);
     }
 
+    @IsAdmin
+    @PostMapping(ApiPaths.BY_ID_ALLERGY_BY_ID)
+    public PatientProfileResponse addAllergyToPatientById(@PathVariable Long id, @PathVariable Long allergyId) {
+        return patientProfileService.addAllergyById(allergyId, id);
+    }
+
     @IsPatient
     @DeleteMapping(ApiPaths.CURRENT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -74,10 +86,24 @@ public class PatientProfileController {
         patientProfileService.deleteById(currentUserProvider.getCurrent().getId());
     }
 
+    @IsPatient
+    @DeleteMapping(ApiPaths.CURRENT_ALLERGIES_BY_ID)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeAllergyFromCurrent(@PathVariable Long allergyId) {
+        patientProfileService.removeAllergy(allergyId, currentUserProvider.getCurrent().getId());
+    }
+
     @IsAdmin
     @DeleteMapping(ApiPaths.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) {
         patientProfileService.deleteById(id);
+    }
+
+    @IsAdmin
+    @DeleteMapping(ApiPaths.BY_ID_ALLERGY_BY_ID)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeAllergyFromPatientById(@PathVariable Long id, @PathVariable Long allergyId) {
+        patientProfileService.removeAllergy(allergyId, id);
     }
 }

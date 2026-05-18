@@ -6,11 +6,15 @@ import com.medical.appointments.profiles.patient.dto.PatientProfileResponse;
 import com.medical.appointments.profiles.patient.dto.UpdatePatientProfile;
 import com.medical.appointments.profiles.patient.mapper.PatientProfileMapper;
 import com.medical.appointments.profiles.profile.ProfileService;
+import com.medical.appointments.references.allergy.Allergy;
+import com.medical.appointments.references.allergy.AllergyService;
 import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.stream.Collectors;
 
 @Service
 public class PatientProfileService extends ProfileService<
@@ -22,12 +26,16 @@ public class PatientProfileService extends ProfileService<
         PatientProfileMapper
         >
 {
+    private final AllergyService allergyService;
+
     public PatientProfileService(
             UserService userService,
             PatientProfileRepository repository,
-            PatientProfileMapper mapper
+            PatientProfileMapper mapper,
+            AllergyService allergyService
     ) {
         super(userService, repository, mapper);
+        this.allergyService = allergyService;
     }
 
     @Override
@@ -43,8 +51,7 @@ public class PatientProfileService extends ProfileService<
 
     @Override
     public PatientProfileResponse updateById(UpdatePatientProfile updateProfile, Long id) {
-        PatientProfile patientProfile = repository.findById(id)
-                .orElseThrow(ProfileNotFoundException::new);
+        PatientProfile patientProfile = findEntityById(id);
 
         if (updateProfile.address() != null) {
             patientProfile.setAddress(updateProfile.address());
@@ -54,10 +61,20 @@ public class PatientProfileService extends ProfileService<
             patientProfile.setPhone(updateProfile.phone());
         }
 
-        if (updateProfile.allergies() != null) {
-            patientProfile.setAllergies(updateProfile.allergies());
-        }
-
         return mapper.toResponse(repository.save(patientProfile));
+    }
+
+    public PatientProfileResponse addAllergyById(Long allergyId, Long profileId) {
+        PatientProfile patientProfile = findEntityById(profileId);
+        Allergy allergy = allergyService.findEntityById(allergyId);
+        patientProfile.addAllergy(allergy);
+        return mapper.toResponse(repository.save(patientProfile));
+    }
+
+    public void removeAllergy(Long allergyId, Long profileId) {
+        PatientProfile patientProfile = findEntityById(profileId);
+        Allergy allergy = allergyService.findEntityById(allergyId);
+        patientProfile.removeAllergy(allergy);
+        repository.save(patientProfile);
     }
 }

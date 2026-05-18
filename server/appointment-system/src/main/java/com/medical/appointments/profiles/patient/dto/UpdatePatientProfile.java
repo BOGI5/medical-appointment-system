@@ -4,6 +4,5 @@ import com.medical.appointments.profiles.profile.dto.UpdateProfile;
 
 public record UpdatePatientProfile(
         String address,
-        String phone,
-        String allergies
+        String phone
 ) implements UpdateProfile {}

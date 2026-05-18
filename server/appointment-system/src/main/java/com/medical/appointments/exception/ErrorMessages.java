@@ -28,4 +28,6 @@ public final class ErrorMessages {
     // reference
     public static final String REFERENCE_ALREADY_EXISTS = "Reference already exists";
     public static final String REFERENCE_NOT_FOUND = "Reference not found";
+    public static final String REFERENCE_ALREADY_ASSIGNED = "Reference already assigned";
+    public static final String REFERENCE_NOT_ASSIGNED = "Reference not assigned";
 }

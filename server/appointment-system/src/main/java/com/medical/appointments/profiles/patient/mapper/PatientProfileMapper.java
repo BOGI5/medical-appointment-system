@@ -4,14 +4,18 @@ import com.medical.appointments.profiles.patient.PatientProfile;
 import com.medical.appointments.profiles.patient.dto.CreatePatientProfile;
 import com.medical.appointments.profiles.patient.dto.PatientProfileResponse;
 import com.medical.appointments.profiles.profile.mapper.ProfileMapper;
+import com.medical.appointments.references.allergy.mapper.AllergyMapper;
 import com.medical.appointments.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class PatientProfileMapper implements ProfileMapper<PatientProfile, PatientProfileResponse, CreatePatientProfile> {
     private final UserMapper userMapper;
+    private final AllergyMapper allergyMapper;
 
     public PatientProfile toEntity(CreatePatientProfile createProfile) {
         return new PatientProfile(createProfile.user());
@@ -25,6 +29,9 @@ public class PatientProfileMapper implements ProfileMapper<PatientProfile, Patie
                 profile.getPhone(),
                 profile.getMedicalHistory(),
                 profile.getAllergies()
+                        .stream()
+                        .map(allergyMapper::toResponse)
+                        .collect(Collectors.toSet())
         );
     }
 }

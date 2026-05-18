@@ -4,7 +4,7 @@ import com.medical.appointments.profiles.profile.dto.UpdateProfile;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public record UpdateDoctorProfile(
-        String specialization,
+        Long specializationId,
         String phone,
         String clinicAddress,
         String bio,

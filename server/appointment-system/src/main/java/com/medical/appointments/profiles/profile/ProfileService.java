@@ -45,9 +45,12 @@ public abstract class ProfileService<
     }
 
     public R findById(Long id) {
-        return mapper.toResponse(
-                repository.findById(id).orElseThrow(ProfileNotFoundException::new)
-        );
+        return mapper.toResponse(findEntityById(id));
+    }
+
+    protected E findEntityById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(ProfileNotFoundException::new);
     }
 
     public R findByUser(User user) {
