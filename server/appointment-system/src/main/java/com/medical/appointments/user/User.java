@@ -1,5 +1,6 @@
 package com.medical.appointments.user;
 
+import com.medical.appointments.database.DbNames;
 import com.medical.appointments.exception.RoleNotAssignedException;
 import com.medical.appointments.exception.UserMustHaveAtLeastOneRoleException;
 import com.medical.appointments.exception.RoleAlreadyAssignedException;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "users")
+@Table(name = DbNames.USERS)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +27,9 @@ public class User {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = DbNames.USER_ROLES, joinColumns = @JoinColumn(name = DbNames.USER_ID))
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(nullable = false)
     private Set<Role> roles = new HashSet<>();
 
     @Column(nullable = false)

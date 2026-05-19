@@ -1,5 +1,6 @@
 package com.medical.appointments.profiles.patient;
 
+import com.medical.appointments.database.DbNames;
 import com.medical.appointments.exception.ReferenceAlreadyAssignedException;
 import com.medical.appointments.exception.ReferenceNotAssignedException;
 import com.medical.appointments.profiles.profile.Profile;
@@ -16,7 +17,7 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Table(name = "patients")
+@Table(name = DbNames.PATIENTS)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PatientProfile extends Profile {
     @Setter
@@ -32,9 +33,9 @@ public class PatientProfile extends Profile {
 
     @ManyToMany
     @JoinTable(
-            name = "patient_allergies",
-            joinColumns = @JoinColumn(name = "patient_id"),
-            inverseJoinColumns = @JoinColumn(name = "allergy_id")
+            name = DbNames.PATIENT_ALLERGIES,
+            joinColumns = @JoinColumn(name = DbNames.PATIENT_ID),
+            inverseJoinColumns = @JoinColumn(name = DbNames.ALLERGY_ID)
     )
     private Set<Allergy> allergies = new HashSet<>();
 

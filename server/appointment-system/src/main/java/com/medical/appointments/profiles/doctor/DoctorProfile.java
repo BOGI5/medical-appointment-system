@@ -1,5 +1,6 @@
 package com.medical.appointments.profiles.doctor;
 
+import com.medical.appointments.database.DbNames;
 import com.medical.appointments.profiles.profile.Profile;
 import com.medical.appointments.references.specialization.Specialization;
 import com.medical.appointments.user.User;
@@ -14,11 +15,11 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "doctors")
+@Table(name = DbNames.DOCTORS)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DoctorProfile extends Profile {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "specialization_id")
+    @JoinColumn(name = DbNames.SPECIALIZATION_ID)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Specialization specialization;
 

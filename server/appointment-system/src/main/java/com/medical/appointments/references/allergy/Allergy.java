@@ -1,5 +1,6 @@
 package com.medical.appointments.references.allergy;
 
+import com.medical.appointments.database.DbNames;
 import com.medical.appointments.profiles.patient.PatientProfile;
 import com.medical.appointments.references.reference.Reference;
 import jakarta.persistence.Entity;
@@ -14,7 +15,7 @@ import java.util.Set;
 
 @Getter
 @Entity
-@Table(name = "allergies")
+@Table(name = DbNames.ALLERGIES)
 @NoArgsConstructor(access =  AccessLevel.PROTECTED)
 public class Allergy extends Reference {
     @ManyToMany(mappedBy = "allergies")
