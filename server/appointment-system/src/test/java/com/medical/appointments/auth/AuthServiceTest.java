@@ -3,12 +3,17 @@ package com.medical.appointments.auth;
 import com.medical.appointments.auth.dto.*;
 import com.medical.appointments.exception.InvalidCredentialsException;
 import com.medical.appointments.auth.mapper.AuthMapper;
+import com.medical.appointments.exception.RoleNotAssignedException;
+import com.medical.appointments.profiles.patient.PatientProfileService;
+import com.medical.appointments.profiles.patient.dto.CreatePatientProfile;
 import com.medical.appointments.security.jwt.JwtService;
 import com.medical.appointments.security.token.RefreshToken;
 import com.medical.appointments.security.token.RefreshTokenService;
 import com.medical.appointments.exception.InvalidRefreshTokenException;
+import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
+import com.medical.appointments.user.dto.CreateUser;
 import com.medical.appointments.user.dto.UserResponse;
 import com.medical.appointments.exception.UserAlreadyExistsException;
 import org.junit.jupiter.api.Test;
@@ -16,9 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,9 +31,9 @@ import static org.mockito.Mockito.*;
 class AuthServiceTest {
 
     @Mock private UserService userService;
-    @Mock private PasswordEncoder passwordEncoder;
     @Mock private JwtService jwtService;
     @Mock private RefreshTokenService refreshTokenService;
+    @Mock private PatientProfileService patientProfileService;
     @Mock private AuthMapper authMapper;
 
     @InjectMocks private AuthService authService;
@@ -40,13 +44,9 @@ class AuthServiceTest {
     void login_success() {
         // given
         LoginRequest request = new LoginRequest("mail", "pass");
-        User user = createUser();
+        User user = createPatientUser();
 
-        when(userService.findOptionalByEmail("mail"))
-                .thenReturn(Optional.of(user));
-
-        when(passwordEncoder.matches("pass", "encoded"))
-                .thenReturn(true);
+        when(userService.findAndCheckCredentials("mail", "pass")).thenReturn(user);
 
         when(jwtService.generateToken(user))
                 .thenReturn("access");
@@ -70,49 +70,25 @@ class AuthServiceTest {
         assertEquals("mail", result.user().email());
         assertEquals("John", result.user().firstName());
 
-        verify(userService).findOptionalByEmail("mail");
-        verify(passwordEncoder).matches("pass", "encoded");
+        verify(userService).findAndCheckCredentials("mail", "pass");
         verify(jwtService).generateToken(user);
         verify(refreshTokenService).create(user);
         verify(authMapper).toAuthResponse(user, "access", "refresh");
     }
 
     @Test
-    void login_userNotFound() {
+    void login_invalidCredentials() {
         // given
         LoginRequest request = new LoginRequest("mail", "pass");
 
-        when(userService.findOptionalByEmail("mail"))
-                .thenReturn(Optional.empty());
+        when(userService.findAndCheckCredentials("mail", "pass"))
+                .thenThrow(new InvalidCredentialsException());
 
         // when + then
         assertThrows(InvalidCredentialsException.class,
                 () -> authService.login(request));
 
-        verify(userService).findOptionalByEmail("mail");
-        verifyNoInteractions(passwordEncoder, jwtService, refreshTokenService, authMapper);
-    }
-
-    @Test
-    void login_wrongPassword() {
-        // given
-        LoginRequest request = new LoginRequest("mail", "pass");
-        User user = createUser();
-
-        when(userService.findOptionalByEmail("mail"))
-                .thenReturn(Optional.of(user));
-
-        when(passwordEncoder.matches("pass", "encoded"))
-                .thenReturn(false);
-
-        // when + then
-        assertThrows(InvalidCredentialsException.class,
-                () -> authService.login(request));
-
-        // verify
-        verify(userService).findOptionalByEmail("mail");
-        verify(passwordEncoder).matches("pass", "encoded");
-
+        verify(userService).findAndCheckCredentials("mail", "pass");
         verifyNoInteractions(jwtService, refreshTokenService, authMapper);
     }
 
@@ -122,12 +98,23 @@ class AuthServiceTest {
     void register_success() {
         // given
         RegisterRequest request = new RegisterRequest("mail", "pass", "John", "Doe");
-        User user = createUser();
+        User user = createPatientUser();
+        CreateUser createUser = new CreateUser(
+                request.email(),
+                request.password(),
+                Set.of(Role.PATIENT),
+                Role.PATIENT,
+                request.firstName(),
+                request.lastName()
+        );
 
-        when(passwordEncoder.encode("pass"))
-                .thenReturn("encoded");
+        when(authMapper.toCreateUser(
+                request,
+                Set.of(Role.PATIENT),
+                Role.PATIENT
+        )).thenReturn(createUser);
 
-        when(userService.createUser(any()))
+        when(userService.create(createUser))
                 .thenReturn(user);
 
         when(jwtService.generateToken(user))
@@ -153,10 +140,10 @@ class AuthServiceTest {
         assertEquals("John", result.user().firstName());
 
         // verify
-        verify(passwordEncoder).encode("pass");
-        verify(userService).createUser(any());
+        verify(userService).create(createUser);
         verify(jwtService).generateToken(user);
         verify(refreshTokenService).create(user);
+        verify(patientProfileService).create(any(CreatePatientProfile.class));
         verify(authMapper).toAuthResponse(user, "access", "refresh");
     }
 
@@ -165,10 +152,22 @@ class AuthServiceTest {
         // given
         RegisterRequest request = new RegisterRequest("mail", "pass", "John", "Doe");
 
-        when(passwordEncoder.encode("pass"))
-                .thenReturn("encoded");
+        CreateUser createUser = new CreateUser(
+                request.email(),
+                request.password(),
+                Set.of(Role.PATIENT),
+                Role.PATIENT,
+                request.firstName(),
+                request.lastName()
+        );
 
-        when(userService.createUser(any()))
+        when(authMapper.toCreateUser(
+                request,
+                Set.of(Role.PATIENT),
+                Role.PATIENT
+        )).thenReturn(createUser);
+
+        when(userService.create(createUser))
                 .thenThrow(new UserAlreadyExistsException());
 
         // when + then
@@ -176,10 +175,12 @@ class AuthServiceTest {
                 () -> authService.registerUser(request));
 
         // verify
-        verify(passwordEncoder).encode("pass");
-
-        verify(authMapper).toCreateUser(eq(request), eq("encoded"));
-        verify(userService).createUser(any());
+        verify(authMapper).toCreateUser(
+                request,
+                Set.of(Role.PATIENT),
+                Role.PATIENT
+        );
+        verify(userService).create(createUser);
 
         verify(authMapper, never()).toAuthResponse(any(), any(), any());
         verifyNoInteractions(jwtService, refreshTokenService);
@@ -191,7 +192,7 @@ class AuthServiceTest {
     void refresh_success() {
         // given
         String token = "old";
-        User user = createUser();
+        User user = createPatientUser();
 
         RefreshToken oldToken = new RefreshToken();
         oldToken.setUser(user);
@@ -247,6 +248,112 @@ class AuthServiceTest {
         verify(refreshTokenService, never()).rotateToken(any());
     }
 
+    // ===== ROLES =====
+
+    @Test
+    void switchCurrentUserRole_success() {
+        // given
+        User currentUser = createPatientUser();
+
+        SwitchRoleRequest request = new SwitchRoleRequest(
+                Role.DOCTOR,
+                "old-refresh"
+        );
+
+        User updatedUser = User.builder()
+                .email("mail")
+                .password("encoded")
+                .firstName("John")
+                .lastName("Doe")
+                .roles(Set.of(Role.PATIENT, Role.DOCTOR))
+                .activeRole(Role.DOCTOR)
+                .build();
+
+        when(userService.switchRole(Role.DOCTOR, currentUser.getId()))
+                .thenReturn(updatedUser);
+
+        when(jwtService.generateToken(updatedUser))
+                .thenReturn("new-access");
+
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken("new-refresh");
+
+        when(refreshTokenService.create(updatedUser))
+                .thenReturn(refreshToken);
+
+        mockAuthResponseMapper();
+
+        // when
+        AuthResponse result = authService.switchCurrentUserRole(request, currentUser);
+
+        // then
+        assertNotNull(result);
+
+        assertEquals("new-access", result.accessToken());
+        assertEquals("new-refresh", result.refreshToken());
+        assertEquals(Role.DOCTOR, result.user().activeRole());
+
+        verify(userService).switchRole(Role.DOCTOR, currentUser.getId());
+        verify(refreshTokenService).revokeToken("old-refresh");
+        verify(jwtService).generateToken(updatedUser);
+        verify(refreshTokenService).create(updatedUser);
+        verify(authMapper).toAuthResponse(updatedUser, "new-access", "new-refresh");
+    }
+
+    @Test
+    void switchCurrentUserRole_invalidRole() {
+        // given
+        User currentUser = createPatientUser();
+
+        SwitchRoleRequest request = new SwitchRoleRequest(
+                Role.DOCTOR,
+                "old-refresh"
+        );
+
+        when(userService.switchRole(Role.DOCTOR, currentUser.getId()))
+                .thenThrow(new RoleNotAssignedException());
+
+        // when + then
+        assertThrows(
+                RoleNotAssignedException.class,
+                () -> authService.switchCurrentUserRole(request, currentUser)
+        );
+
+        verify(userService).switchRole(Role.DOCTOR, currentUser.getId());
+
+        verify(refreshTokenService, never()).revokeToken(any());
+        verifyNoInteractions(jwtService, authMapper);
+    }
+
+    // ===== LOGOUT =====
+
+    @Test
+    void logout_success() {
+        // given
+        TokenRequest request = new TokenRequest("refresh-token");
+
+        // when
+        authService.logoutUser(request);
+
+        // then
+        verify(refreshTokenService).revokeToken("refresh-token");
+    }
+
+    @Test
+    void logout_invalidToken_doesNotThrow() {
+        // given
+        TokenRequest request = new TokenRequest("bad-token");
+
+        doThrow(new InvalidRefreshTokenException())
+                .when(refreshTokenService)
+                .revokeToken("bad-token");
+
+        // when + then
+        assertDoesNotThrow(() -> authService.logoutUser(request));
+
+        verify(refreshTokenService).revokeToken("bad-token");
+    }
+
     private void mockAuthResponseMapper() {
         when(authMapper.toAuthResponse(any(), any(), any()))
                 .thenAnswer(inv -> {
@@ -259,7 +366,9 @@ class AuthServiceTest {
                                     u.getId(),
                                     u.getEmail(),
                                     u.getFirstName(),
-                                    u.getLastName()
+                                    u.getLastName(),
+                                    u.getRoles(),
+                                    u.getActiveRole()
                             ),
                             access,
                             refresh
@@ -267,7 +376,14 @@ class AuthServiceTest {
                 });
     }
 
-    private User createUser() {
-        return new User("mail", "encoded", "John", "Doe");
+    private User createPatientUser() {
+        return User.builder()
+                .email("mail")
+                .password("encoded")
+                .firstName("John")
+                .lastName("Doe")
+                .roles(Set.of(Role.PATIENT))
+                .activeRole(Role.PATIENT)
+                .build();
     }
 }

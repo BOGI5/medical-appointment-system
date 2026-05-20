@@ -1,6 +1,7 @@
 package com.medical.appointments.security.token;
 
 import com.medical.appointments.exception.InvalidRefreshTokenException;
+import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,7 +31,14 @@ class RefreshTokenServiceTest {
 
     @BeforeEach
     void setup() {
-        user = new User("mail", "pass", "John", "Doe");
+        user = User.builder()
+                .email("mail")
+                .password("pass")
+                .firstName("John")
+                .lastName("Doe")
+                .roles(Set.of(Role.PATIENT))
+                .activeRole(Role.PATIENT)
+                .build();
 
         // set expiration 1 day
         ReflectionTestUtils.setField(service, "refreshTokenExpiration", 1);
