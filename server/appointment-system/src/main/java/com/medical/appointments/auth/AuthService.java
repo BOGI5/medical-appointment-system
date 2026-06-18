@@ -11,6 +11,7 @@ import com.medical.appointments.exception.InvalidRefreshTokenException;
 import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
+import com.medical.appointments.user.dto.CreateUserRequest;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -27,14 +28,14 @@ public class AuthService {
     private final AuthMapper authMapper;
     private final PatientProfileService patientProfileService;
 
-    public AuthResponse login(LoginRequest loginRequest) {
-        return generateAuthResponse(userService.findAndCheckCredentials(loginRequest.email(), loginRequest.password()));
+    public AuthResponse login(LoginRequest request) {
+        return generateAuthResponse(userService.findAndCheckCredentials(request.email(), request.password()));
     }
 
     @Transactional
-    public AuthResponse registerUser(RegisterRequest registerRequest) {
+    public AuthResponse registerUser(CreateUserRequest request) {
         User user = userService.create(authMapper.toCreateUser(
-                registerRequest,
+                request,
                 Set.of(Role.PATIENT),
                 Role.PATIENT
         ));
@@ -44,8 +45,8 @@ public class AuthService {
         return generateAuthResponse(user);
     }
 
-    public AuthResponse refreshTokens(TokenRequest tokenRequest) {
-        RefreshToken oldRefreshToken = refreshTokenService.validateToken(tokenRequest.refreshToken());
+    public AuthResponse refreshTokens(TokenRequest request) {
+        RefreshToken oldRefreshToken = refreshTokenService.validateToken(request.refreshToken());
 
         RefreshToken newRefreshToken = refreshTokenService.rotateToken(oldRefreshToken);
 
@@ -59,15 +60,15 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse switchCurrentUserRole(SwitchRoleRequest switchRoleRequest, User currentUser) {
-        User user = userService.switchRole(switchRoleRequest.role(), currentUser.getId());
-        refreshTokenService.revokeToken(switchRoleRequest.refreshToken());
+    public AuthResponse switchCurrentUserRole(SwitchRoleRequest request, User currentUser) {
+        User user = userService.switchRole(request.role(), currentUser.getId());
+        refreshTokenService.revokeToken(request.refreshToken());
         return generateAuthResponse(user);
     }
 
-    public void logoutUser(TokenRequest tokenRequest) {
+    public void logoutUser(TokenRequest request) {
         try {
-            refreshTokenService.revokeToken(tokenRequest.refreshToken());
+            refreshTokenService.revokeToken(request.refreshToken());
         } catch (InvalidRefreshTokenException ignored) {}
     }
 

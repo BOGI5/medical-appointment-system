@@ -1,7 +1,7 @@
 package com.medical.appointments.controller;
 
 import com.medical.appointments.profiles.admin.AdminService;
-import com.medical.appointments.profiles.admin.dto.CreateAdminRequest;
+import com.medical.appointments.user.dto.CreateUserRequest;
 import com.medical.appointments.security.CurrentUserProvider;
 import com.medical.appointments.security.annotation.role.IsAdmin;
 import com.medical.appointments.user.dto.UserResponse;
@@ -20,8 +20,8 @@ public class AdminController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse createNew(@RequestBody @Valid CreateAdminRequest createAdminRequest) {
-        return adminService.create(createAdminRequest);
+    public UserResponse createNew(@RequestBody @Valid CreateUserRequest request) {
+        return adminService.create(request);
     }
 
     @PostMapping(ApiPaths.BY_ID)

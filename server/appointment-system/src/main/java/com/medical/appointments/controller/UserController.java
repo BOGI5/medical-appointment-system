@@ -27,21 +27,21 @@ public class UserController {
     }
 
     @PatchMapping(ApiPaths.CURRENT)
-    public UserResponse updateCurrent(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
+    public UserResponse updateCurrent(@Valid @RequestBody UpdateUserRequest request) {
         User user = currentUserProvider.getCurrent();
-        return userService.update(updateUserRequest, user.getId());
+        return userService.update(request, user.getId());
     }
 
     @IsAdmin
     @PatchMapping(ApiPaths.BY_ID)
-    public UserResponse updateById(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
-        return userService.update(updateUserRequest, id);
+    public UserResponse updateById(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
+        return userService.update(request, id);
     }
 
     @PatchMapping(ApiPaths.CURRENT_PASSWORD)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCurrentPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
-        userService.updateCurrentPassword(currentUserProvider.getCurrent(), changePasswordRequest);
+    public void updateCurrentPassword(@Valid @RequestBody ChangePasswordRequest request) {
+        userService.updateCurrentPassword(currentUserProvider.getCurrent(), request);
     }
 
     @DeleteMapping(ApiPaths.CURRENT)

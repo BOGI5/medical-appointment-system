@@ -1,9 +1,8 @@
 package com.medical.appointments.profiles.patient;
 
-import com.medical.appointments.exception.ProfileNotFoundException;
 import com.medical.appointments.profiles.patient.dto.CreatePatientProfile;
 import com.medical.appointments.profiles.patient.dto.PatientProfileResponse;
-import com.medical.appointments.profiles.patient.dto.UpdatePatientProfile;
+import com.medical.appointments.profiles.patient.dto.UpdatePatientRequest;
 import com.medical.appointments.profiles.patient.mapper.PatientProfileMapper;
 import com.medical.appointments.profiles.profile.ProfileService;
 import com.medical.appointments.references.allergy.Allergy;
@@ -14,14 +13,12 @@ import com.medical.appointments.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Collectors;
-
 @Service
 public class PatientProfileService extends ProfileService<
         PatientProfile,
         PatientProfileResponse,
         CreatePatientProfile,
-        UpdatePatientProfile,
+        UpdatePatientRequest,
         PatientProfileRepository,
         PatientProfileMapper
         >
@@ -50,15 +47,17 @@ public class PatientProfileService extends ProfileService<
     }
 
     @Override
-    public PatientProfileResponse updateById(UpdatePatientProfile updateProfile, Long id) {
+    public PatientProfileResponse updateById(UpdatePatientRequest request, Long id) {
         PatientProfile patientProfile = findEntityById(id);
 
-        if (updateProfile.address() != null) {
-            patientProfile.setAddress(updateProfile.address());
+        String address = request.address();
+        if (address != null && !address.isBlank()) {
+            patientProfile.setAddress(address);
         }
 
-        if (updateProfile.phone() != null) {
-            patientProfile.setPhone(updateProfile.phone());
+        String phone = request.phone();
+        if (phone != null && !phone.isBlank()) {
+            patientProfile.setPhone(phone);
         }
 
         return mapper.toResponse(repository.save(patientProfile));

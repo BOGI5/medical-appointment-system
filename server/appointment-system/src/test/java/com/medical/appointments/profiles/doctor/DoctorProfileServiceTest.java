@@ -2,9 +2,9 @@ package com.medical.appointments.profiles.doctor;
 
 import com.medical.appointments.exception.*;
 import com.medical.appointments.profiles.doctor.dto.CreateDoctorProfile;
-import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfileRequest;
+import com.medical.appointments.user.dto.CreateUserRequest;
 import com.medical.appointments.profiles.doctor.dto.DoctorProfileResponse;
-import com.medical.appointments.profiles.doctor.dto.UpdateDoctorProfile;
+import com.medical.appointments.profiles.doctor.dto.UpdateDoctorRequest;
 import com.medical.appointments.profiles.doctor.mapper.DoctorProfileMapper;
 import com.medical.appointments.references.specialization.Specialization;
 import com.medical.appointments.references.specialization.SpecializationService;
@@ -44,7 +44,7 @@ class DoctorProfileServiceTest {
     @Test
     void createUserAndProfile_success() {
         // given
-        CreateUserAndDoctorProfileRequest request =
+        CreateUserRequest request =
                 createCreateUserAndDoctorProfileRequest();
 
         CreateUser createUser = createCreateUser();
@@ -92,7 +92,7 @@ class DoctorProfileServiceTest {
     @Test
     void createUserAndProfile_userAlreadyExists() {
         // given
-        CreateUserAndDoctorProfileRequest request =
+        CreateUserRequest request =
                 createCreateUserAndDoctorProfileRequest();
 
         CreateUser createUser = createCreateUser();
@@ -121,7 +121,7 @@ class DoctorProfileServiceTest {
     @Test
     void createUserAndProfile_profileAlreadyExists() {
         // given
-        CreateUserAndDoctorProfileRequest request =
+        CreateUserRequest request =
                 createCreateUserAndDoctorProfileRequest();
 
         CreateUser createUser = createCreateUser();
@@ -168,8 +168,8 @@ class DoctorProfileServiceTest {
         Specialization specialization =
                 createSpecialization();
 
-        UpdateDoctorProfile request =
-                new UpdateDoctorProfile(
+        UpdateDoctorRequest request =
+                new UpdateDoctorRequest(
                         specializationId,
                         "0888888888",
                         "new clinic",
@@ -220,8 +220,8 @@ class DoctorProfileServiceTest {
         // given
         Long id = 1L;
 
-        UpdateDoctorProfile request =
-                new UpdateDoctorProfile(
+        UpdateDoctorRequest request =
+                new UpdateDoctorRequest(
                         null,
                         "088",
                         "clinic",
@@ -257,8 +257,8 @@ class DoctorProfileServiceTest {
 
         DoctorProfile profile = createProfile(user);
 
-        UpdateDoctorProfile request =
-                new UpdateDoctorProfile(
+        UpdateDoctorRequest request =
+                new UpdateDoctorRequest(
                         1L,
                         "088",
                         "clinic",
@@ -472,8 +472,8 @@ class DoctorProfileServiceTest {
         );
     }
 
-    private CreateUserAndDoctorProfileRequest createCreateUserAndDoctorProfileRequest() {
-        return new CreateUserAndDoctorProfileRequest(
+    private CreateUserRequest createCreateUserAndDoctorProfileRequest() {
+        return new CreateUserRequest(
                 "doctor@mail.com",
                 "password",
                 "John",

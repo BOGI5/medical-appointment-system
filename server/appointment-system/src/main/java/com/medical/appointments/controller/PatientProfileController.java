@@ -2,7 +2,7 @@ package com.medical.appointments.controller;
 
 import com.medical.appointments.profiles.patient.PatientProfileService;
 import com.medical.appointments.profiles.patient.dto.PatientProfileResponse;
-import com.medical.appointments.profiles.patient.dto.UpdatePatientProfile;
+import com.medical.appointments.profiles.patient.dto.UpdatePatientRequest;
 import com.medical.appointments.security.CurrentUserProvider;
 import com.medical.appointments.security.annotation.role.IsAdmin;
 import com.medical.appointments.security.annotation.role.IsAdminOrDoctor;
@@ -49,11 +49,9 @@ public class PatientProfileController {
 
     @IsPatient
     @PatchMapping(ApiPaths.CURRENT)
-    public PatientProfileResponse updateCurrent(
-            @RequestBody @Valid UpdatePatientProfile updatePatientProfile
-    ) {
+    public PatientProfileResponse updateCurrent(@RequestBody @Valid UpdatePatientRequest request) {
         return patientProfileService.updateById(
-                updatePatientProfile,
+                request,
                 currentUserProvider.getCurrent().getId()
         );
     }
@@ -67,10 +65,10 @@ public class PatientProfileController {
     @IsAdmin
     @PatchMapping(ApiPaths.BY_ID)
     public PatientProfileResponse updateById(
-            @RequestBody @Valid UpdatePatientProfile updatePatientProfile,
+            @RequestBody @Valid UpdatePatientRequest request,
             @PathVariable Long id
     ) {
-        return patientProfileService.updateById(updatePatientProfile, id);
+        return patientProfileService.updateById(request, id);
     }
 
     @IsAdmin

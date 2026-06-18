@@ -1,7 +1,7 @@
 package com.medical.appointments.controller;
 
 import com.medical.appointments.references.specialization.SpecializationService;
-import com.medical.appointments.references.specialization.dto.CreateSpecialization;
+import com.medical.appointments.references.specialization.dto.CreateSpecializationRequest;
 import com.medical.appointments.references.specialization.dto.SpecializationResponse;
 import com.medical.appointments.security.annotation.role.IsAdmin;
 import jakarta.validation.Valid;
@@ -21,8 +21,8 @@ public class SpecializationController {
     @IsAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public SpecializationResponse create(@RequestBody @Valid CreateSpecialization createSpecialization) {
-        return specializationService.create(createSpecialization);
+    public SpecializationResponse create(@RequestBody @Valid CreateSpecializationRequest request) {
+        return specializationService.create(request);
     }
 
     @GetMapping

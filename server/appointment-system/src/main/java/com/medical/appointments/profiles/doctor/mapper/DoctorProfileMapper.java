@@ -2,7 +2,7 @@ package com.medical.appointments.profiles.doctor.mapper;
 
 import com.medical.appointments.profiles.doctor.DoctorProfile;
 import com.medical.appointments.profiles.doctor.dto.CreateDoctorProfile;
-import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfileRequest;
+import com.medical.appointments.user.dto.CreateUserRequest;
 import com.medical.appointments.profiles.doctor.dto.DoctorProfileResponse;
 import com.medical.appointments.profiles.profile.mapper.ProfileMapper;
 import com.medical.appointments.references.specialization.mapper.SpecializationMapper;
@@ -40,14 +40,14 @@ public class DoctorProfileMapper implements ProfileMapper<DoctorProfile, DoctorP
         return new DoctorProfile(createProfile.user());
     }
 
-    public CreateUser toCreateUser(CreateUserAndDoctorProfileRequest createUserAndDoctorProfileRequest) {
+    public CreateUser toCreateUser(CreateUserRequest createUserRequest) {
         return new CreateUser(
-                createUserAndDoctorProfileRequest.email(),
-                createUserAndDoctorProfileRequest.password(),
+                createUserRequest.email(),
+                createUserRequest.password(),
                 Set.of(Role.DOCTOR),
                 Role.DOCTOR,
-                createUserAndDoctorProfileRequest.firstName(),
-                createUserAndDoctorProfileRequest.lastName()
+                createUserRequest.firstName(),
+                createUserRequest.lastName()
         );
     }
 }

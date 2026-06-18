@@ -4,10 +4,10 @@ import com.medical.appointments.exception.CannotRemoveLastAdminException;
 import com.medical.appointments.exception.RoleAlreadyAssignedException;
 import com.medical.appointments.exception.UserAlreadyExistsException;
 import com.medical.appointments.exception.UserNotFoundException;
-import com.medical.appointments.profiles.admin.dto.CreateAdminRequest;
 import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
+import com.medical.appointments.user.dto.CreateUserRequest;
 import com.medical.appointments.user.dto.UserResponse;
 import com.medical.appointments.user.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
@@ -37,8 +37,8 @@ class AdminServiceTest {
     @Test
     void create_success() {
         // given
-        CreateAdminRequest request =
-                new CreateAdminRequest(
+        CreateUserRequest request =
+                new CreateUserRequest(
                         "admin@mail.com",
                         "password",
                         "John",
@@ -78,8 +78,8 @@ class AdminServiceTest {
     @Test
     void create_userAlreadyExists() {
         // given
-        CreateAdminRequest request =
-                new CreateAdminRequest(
+        CreateUserRequest request =
+                new CreateUserRequest(
                         "admin@mail.com",
                         "password",
                         "John",

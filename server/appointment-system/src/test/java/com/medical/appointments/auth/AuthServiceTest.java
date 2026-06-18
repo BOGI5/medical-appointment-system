@@ -14,6 +14,7 @@ import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
 import com.medical.appointments.user.dto.CreateUser;
+import com.medical.appointments.user.dto.CreateUserRequest;
 import com.medical.appointments.user.dto.UserResponse;
 import com.medical.appointments.exception.UserAlreadyExistsException;
 import org.junit.jupiter.api.Test;
@@ -97,7 +98,7 @@ class AuthServiceTest {
     @Test
     void register_success() {
         // given
-        RegisterRequest request = new RegisterRequest("mail", "pass", "John", "Doe");
+        CreateUserRequest request = new CreateUserRequest("mail", "pass", "John", "Doe");
         User user = createPatientUser();
         CreateUser createUser = new CreateUser(
                 request.email(),
@@ -150,7 +151,7 @@ class AuthServiceTest {
     @Test
     void register_userAlreadyExists() {
         // given
-        RegisterRequest request = new RegisterRequest("mail", "pass", "John", "Doe");
+        CreateUserRequest request = new CreateUserRequest("mail", "pass", "John", "Doe");
 
         CreateUser createUser = new CreateUser(
                 request.email(),

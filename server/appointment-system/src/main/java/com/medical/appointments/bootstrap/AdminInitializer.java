@@ -1,5 +1,6 @@
 package com.medical.appointments.bootstrap;
 
+import com.medical.appointments.logger.LoggerMessages;
 import com.medical.appointments.user.Role;
 import com.medical.appointments.user.UserService;
 import com.medical.appointments.user.dto.CreateUser;
@@ -32,11 +33,9 @@ public class AdminInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userService.existsByRole(Role.ADMIN)) {
-            log.info("Admin already exists, bootstrap skipped");
+            log.info(LoggerMessages.ADMIN_ALREADY_EXISTS);
             return;
         }
-
-        log.info("Bootstrap admin created with email: {}", email);
 
         userService.create(
                 new CreateUser(
@@ -48,5 +47,7 @@ public class AdminInitializer implements CommandLineRunner {
                     lastName
                 )
         );
+
+        log.info(LoggerMessages.ADMIN_CREATED, email);
     }
 }

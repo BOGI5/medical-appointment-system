@@ -1,10 +1,10 @@
-package com.medical.appointments.profiles.doctor.dto;
+package com.medical.appointments.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record CreateUserAndDoctorProfileRequest(
+public record CreateUserRequest(
         @Email
         @NotBlank
         String email,

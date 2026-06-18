@@ -74,15 +74,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public UserResponse update(UpdateUserRequest updateUserRequest, Long id) {
+    public UserResponse update(UpdateUserRequest request, Long id) {
         User user = findById(id);
 
-        String firstName = updateUserRequest.firstName();
+        String firstName = request.firstName();
         if (firstName != null && !firstName.isBlank()) {
             user.setFirstName(firstName);
         }
 
-        String lastName = updateUserRequest.lastName();
+        String lastName = request.lastName();
         if (lastName != null && !lastName.isBlank()) {
             user.setLastName(lastName);
         }
@@ -108,22 +108,22 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void updateCurrentPassword(User user, ChangePasswordRequest changePasswordRequest) {
+    public void updateCurrentPassword(User user, ChangePasswordRequest request) {
         if (!passwordMatches(
-                changePasswordRequest.oldPassword(),
+                request.oldPassword(),
                 user.getPassword()
         )) {
             throw new InvalidPasswordException();
         }
 
         if (passwordMatches(
-                changePasswordRequest.newPassword(),
+                request.newPassword(),
                 user.getPassword()
         )) {
             throw new SamePasswordException();
         }
 
-        user.setPassword(hashPassword(changePasswordRequest.newPassword()));
+        user.setPassword(hashPassword(request.newPassword()));
 
         userRepository.save(user);
     }

@@ -2,7 +2,7 @@ package com.medical.appointments.controller;
 
 import com.medical.appointments.references.allergy.AllergyService;
 import com.medical.appointments.references.allergy.dto.AllergyResponse;
-import com.medical.appointments.references.allergy.dto.CreateAllergy;
+import com.medical.appointments.references.allergy.dto.CreateAllergyRequest;
 import com.medical.appointments.security.annotation.role.IsAdmin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +21,8 @@ public class AllergyController {
     @IsAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AllergyResponse create(@RequestBody @Valid CreateAllergy createAllergy) {
-        return allergyService.create(createAllergy);
+    public AllergyResponse create(@RequestBody @Valid CreateAllergyRequest request) {
+        return allergyService.create(request);
     }
 
     @GetMapping

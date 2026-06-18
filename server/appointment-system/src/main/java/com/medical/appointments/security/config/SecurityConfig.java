@@ -1,6 +1,7 @@
 package com.medical.appointments.security.config;
 
 import com.medical.appointments.controller.ApiPaths;
+import com.medical.appointments.exception.ErrorMessages;
 import com.medical.appointments.security.jwt.JwtAuthFilter;
 import com.medical.appointments.security.response.SecurityErrorResponseWriter;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -34,9 +36,9 @@ public class SecurityConfig {
     private final SecurityErrorResponseWriter securityErrorResponseWriter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         return http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -54,10 +56,14 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
-                                securityErrorResponseWriter.write(response, HttpStatus.UNAUTHORIZED)
+                                securityErrorResponseWriter.write(
+                                        response, HttpStatus.UNAUTHORIZED, ErrorMessages.INVALID_ACCESS_TOKEN
+                                )
                         )
                         .accessDeniedHandler((request, response, accessDeniedException) ->
-                                securityErrorResponseWriter.write(response, HttpStatus.FORBIDDEN)
+                                securityErrorResponseWriter.write(
+                                        response, HttpStatus.FORBIDDEN, ErrorMessages.ACCESS_DENIED
+                                )
                         )
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

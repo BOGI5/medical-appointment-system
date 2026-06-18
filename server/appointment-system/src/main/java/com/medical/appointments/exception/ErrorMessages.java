@@ -17,6 +17,8 @@ public final class ErrorMessages {
 
     // auth
     public static final String INVALID_CREDENTIALS = "Invalid credentials";
+    public static final String INVALID_ACCESS_TOKEN = "Invalid or expired access token";
+    public static final String ACCESS_DENIED = "Access denied";
 
     // token
     public static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";

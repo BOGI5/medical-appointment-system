@@ -3,7 +3,7 @@ package com.medical.appointments.profiles.patient;
 import com.medical.appointments.exception.*;
 import com.medical.appointments.profiles.patient.dto.CreatePatientProfile;
 import com.medical.appointments.profiles.patient.dto.PatientProfileResponse;
-import com.medical.appointments.profiles.patient.dto.UpdatePatientProfile;
+import com.medical.appointments.profiles.patient.dto.UpdatePatientRequest;
 import com.medical.appointments.profiles.patient.mapper.PatientProfileMapper;
 import com.medical.appointments.references.allergy.Allergy;
 import com.medical.appointments.references.allergy.AllergyService;
@@ -112,8 +112,8 @@ class PatientProfileServiceTest {
 
         PatientProfile profile = createProfile(user);
 
-        UpdatePatientProfile request =
-                new UpdatePatientProfile(
+        UpdatePatientRequest request =
+                new UpdatePatientRequest(
                         "new address",
                         "0888888888"
                 );
@@ -150,8 +150,8 @@ class PatientProfileServiceTest {
         // given
         Long id = 1L;
 
-        UpdatePatientProfile request =
-                new UpdatePatientProfile(
+        UpdatePatientRequest request =
+                new UpdatePatientRequest(
                         "address",
                         "088"
                 );

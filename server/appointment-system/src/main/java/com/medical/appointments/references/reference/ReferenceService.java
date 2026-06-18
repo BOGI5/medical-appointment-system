@@ -2,7 +2,7 @@ package com.medical.appointments.references.reference;
 
 import com.medical.appointments.exception.ReferenceAlreadyExistsException;
 import com.medical.appointments.exception.ReferenceNotFoundException;
-import com.medical.appointments.references.reference.dto.CreateReference;
+import com.medical.appointments.references.reference.dto.CreateReferenceRequest;
 import com.medical.appointments.references.reference.dto.ReferenceResponse;
 import com.medical.appointments.references.reference.mapper.ReferenceMapper;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 public abstract class ReferenceService<
         E extends Reference,
         R extends ReferenceResponse,
-        C extends CreateReference,
+        C extends CreateReferenceRequest,
         Repository extends ReferenceRepository<E>,
         Mapper extends ReferenceMapper<E, R, C>
         >

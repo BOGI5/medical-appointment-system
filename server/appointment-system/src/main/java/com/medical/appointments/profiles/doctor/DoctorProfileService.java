@@ -2,9 +2,9 @@ package com.medical.appointments.profiles.doctor;
 
 import com.medical.appointments.exception.ProfileNotFoundException;
 import com.medical.appointments.profiles.doctor.dto.CreateDoctorProfile;
-import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfileRequest;
+import com.medical.appointments.user.dto.CreateUserRequest;
 import com.medical.appointments.profiles.doctor.dto.DoctorProfileResponse;
-import com.medical.appointments.profiles.doctor.dto.UpdateDoctorProfile;
+import com.medical.appointments.profiles.doctor.dto.UpdateDoctorRequest;
 import com.medical.appointments.profiles.doctor.mapper.DoctorProfileMapper;
 import com.medical.appointments.profiles.profile.ProfileService;
 import com.medical.appointments.references.specialization.SpecializationService;
@@ -19,7 +19,7 @@ public class DoctorProfileService extends ProfileService<
         DoctorProfile,
         DoctorProfileResponse,
         CreateDoctorProfile,
-        UpdateDoctorProfile,
+        UpdateDoctorRequest,
         DoctorProfileRepository,
         DoctorProfileMapper
         >
@@ -42,37 +42,38 @@ public class DoctorProfileService extends ProfileService<
     }
 
     @Transactional
-    public DoctorProfileResponse createUserAndProfile(
-            CreateUserAndDoctorProfileRequest createUserAndDoctorProfileRequest
-    ) {
-        User user = userService.create(mapper.toCreateUser(createUserAndDoctorProfileRequest));
+    public DoctorProfileResponse createUserAndProfile(CreateUserRequest request) {
+        User user = userService.create(mapper.toCreateUser(request));
         return create(new CreateDoctorProfile(user));
     }
 
     @Override
-    public DoctorProfileResponse updateById(UpdateDoctorProfile updateProfile, Long id) {
+    public DoctorProfileResponse updateById(UpdateDoctorRequest request, Long id) {
         DoctorProfile profile = repository.findById(id).orElseThrow(ProfileNotFoundException::new);
 
-        if (updateProfile.specializationId() != null) {
+        if (request.specializationId() != null) {
             profile.setSpecialization(
-                    specializationService.findEntityById(updateProfile.specializationId())
+                    specializationService.findEntityById(request.specializationId())
             );
         }
 
-        if (updateProfile.phone() != null && !updateProfile.phone().isBlank()) {
-            profile.setPhone(updateProfile.phone());
+        String phone = request.phone();
+        if (phone != null && !phone.isBlank()) {
+            profile.setPhone(phone);
         }
 
-        if (updateProfile.clinicAddress() != null && !updateProfile.clinicAddress().isBlank()) {
-            profile.setClinicAddress(updateProfile.clinicAddress());
+        String clinicAddress = request.clinicAddress();
+        if (clinicAddress != null && !clinicAddress.isBlank()) {
+            profile.setClinicAddress(clinicAddress);
         }
 
-        if (updateProfile.bio() != null && !updateProfile.bio().isBlank()) {
-            profile.setBio(updateProfile.bio());
+        String bio = request.bio();
+        if (bio != null && !bio.isBlank()) {
+            profile.setBio(bio);
         }
 
-        if (updateProfile.yearsOfExperience() != null) {
-            profile.setYearsOfExperience(updateProfile.yearsOfExperience());
+        if (request.yearsOfExperience() != null) {
+            profile.setYearsOfExperience(request.yearsOfExperience());
         }
 
         return mapper.toResponse(repository.save(profile));

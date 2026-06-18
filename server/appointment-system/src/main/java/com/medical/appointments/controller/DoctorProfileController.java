@@ -1,9 +1,9 @@
 package com.medical.appointments.controller;
 
 import com.medical.appointments.profiles.doctor.DoctorProfileService;
-import com.medical.appointments.profiles.doctor.dto.CreateUserAndDoctorProfileRequest;
+import com.medical.appointments.user.dto.CreateUserRequest;
 import com.medical.appointments.profiles.doctor.dto.DoctorProfileResponse;
-import com.medical.appointments.profiles.doctor.dto.UpdateDoctorProfile;
+import com.medical.appointments.profiles.doctor.dto.UpdateDoctorRequest;
 import com.medical.appointments.security.CurrentUserProvider;
 import com.medical.appointments.security.annotation.role.IsAdmin;
 import com.medical.appointments.security.annotation.role.IsDoctor;
@@ -25,8 +25,8 @@ public class DoctorProfileController {
     @IsAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DoctorProfileResponse create(@Valid @RequestBody CreateUserAndDoctorProfileRequest createUserAndDoctorProfileRequest) {
-        return doctorProfileService.createUserAndProfile(createUserAndDoctorProfileRequest);
+    public DoctorProfileResponse create(@Valid @RequestBody CreateUserRequest request) {
+        return doctorProfileService.createUserAndProfile(request);
     }
 
     @IsDoctor
@@ -47,17 +47,17 @@ public class DoctorProfileController {
 
     @IsDoctor
     @PatchMapping(ApiPaths.CURRENT)
-    public DoctorProfileResponse updateCurrent(@Valid @RequestBody UpdateDoctorProfile updateDoctorProfile) {
-        return doctorProfileService.updateById(updateDoctorProfile, currentUserProvider.getCurrent().getId());
+    public DoctorProfileResponse updateCurrent(@Valid @RequestBody UpdateDoctorRequest request) {
+        return doctorProfileService.updateById(request, currentUserProvider.getCurrent().getId());
     }
 
     @IsAdmin
     @PatchMapping(ApiPaths.BY_ID)
     public DoctorProfileResponse updateById(
-            @RequestBody @Valid UpdateDoctorProfile updateDoctorProfile,
+            @RequestBody @Valid UpdateDoctorRequest request,
             @PathVariable Long id
     ) {
-        return doctorProfileService.updateById(updateDoctorProfile, id);
+        return doctorProfileService.updateById(request, id);
     }
 
     @IsDoctor

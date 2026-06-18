@@ -1,7 +1,7 @@
 package com.medical.appointments.references.allergy;
 
 import com.medical.appointments.references.allergy.dto.AllergyResponse;
-import com.medical.appointments.references.allergy.dto.CreateAllergy;
+import com.medical.appointments.references.allergy.dto.CreateAllergyRequest;
 import com.medical.appointments.references.allergy.mapper.AllergyMapper;
 import com.medical.appointments.references.reference.ReferenceService;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 public class AllergyService extends ReferenceService<
         Allergy,
         AllergyResponse,
-        CreateAllergy,
+        CreateAllergyRequest,
         AllergyRepository,
         AllergyMapper
         > {
