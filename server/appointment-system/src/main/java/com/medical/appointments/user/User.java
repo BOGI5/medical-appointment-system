@@ -1,12 +1,19 @@
 package com.medical.appointments.user;
 
+import com.medical.appointments.database.DbNames;
+import com.medical.appointments.exception.RoleNotAssignedException;
+import com.medical.appointments.exception.UserMustHaveAtLeastOneRoleException;
+import com.medical.appointments.exception.RoleAlreadyAssignedException;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "users")
+@Table(name = DbNames.USERS)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,12 +26,75 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = DbNames.USER_ROLES, joinColumns = @JoinColumn(name = DbNames.USER_ID))
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Set<Role> roles = new HashSet<>();
+
+    @Column(nullable = false)
+    private Role activeRole;
+
+    public void setActiveRole(Role activeRole) {
+        if (activeRole == null) {
+            throw new IllegalArgumentException("activeRole cannot be null");
+        }
+
+        if (!roles.contains(activeRole)) {
+            throw new RoleNotAssignedException();
+        }
+
+        this.activeRole = activeRole;
+    }
+
+    public void addRole(Role role) {
+        if (role == null) {
+            throw new IllegalArgumentException("Role cannot be null");
+        }
+
+        if (this.roles.contains(role)) {
+            throw new RoleAlreadyAssignedException();
+        }
+
+        this.roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        if (!this.roles.contains(role)) {
+            throw new RoleNotAssignedException();
+        }
+
+        if (this.roles.size() == 1) {
+            throw new UserMustHaveAtLeastOneRoleException();
+        }
+
+        this.roles.remove(role);
+
+        if (role.equals(this.activeRole)) {
+            setActiveRole(this.roles.iterator().next());
+        }
+    }
+
     @Builder
-    public User(String email, String password, String firstName, String lastName) {
+    public User(String email, String password, String firstName, String lastName, Set<Role> roles, Role activeRole) {
+        if (roles == null || roles.isEmpty()) {
+            throw new UserMustHaveAtLeastOneRoleException();
+        }
+
+        if (activeRole == null) {
+            throw new IllegalArgumentException("activeRole cannot be null");
+        }
+
+        if (!roles.contains(activeRole)) {
+            throw new RoleNotAssignedException();
+        }
+
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.roles.addAll(roles);
+        this.activeRole = activeRole;
     }
 
     @Setter

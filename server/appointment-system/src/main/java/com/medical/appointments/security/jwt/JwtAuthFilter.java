@@ -1,6 +1,6 @@
 package com.medical.appointments.security.jwt;
 
-import com.medical.appointments.user.User;
+import com.medical.appointments.user.Role;
 import com.medical.appointments.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -42,8 +43,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String email = jwtService.extractEmail(token);
+        Role activeRole = jwtService.extractActiveRole(token);
 
-        if (email == null) {
+        if (email == null || activeRole == null) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -54,8 +56,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         userService.findOptionalByEmail(email).ifPresent(user -> {
+            if (!user.getRoles().contains(activeRole) || !user.getActiveRole().equals(activeRole)) return;
+
             UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(user, null, List.of());
+                    new UsernamePasswordAuthenticationToken(
+                            user,
+                            null,
+                            List.of(new SimpleGrantedAuthority(activeRole.asAuthority()))
+                    );
 
             SecurityContextHolder.getContext().setAuthentication(auth);
         });

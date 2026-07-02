@@ -1,6 +1,7 @@
 package com.medical.appointments.controller;
 
 import com.medical.appointments.security.CurrentUserProvider;
+import com.medical.appointments.security.annotation.role.IsAdmin;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
 import com.medical.appointments.user.dto.ChangePasswordRequest;
@@ -22,39 +23,39 @@ public class UserController {
 
     @GetMapping(ApiPaths.CURRENT)
     public UserResponse getCurrentUser() {
-        return userMapper.toResponse(currentUserProvider.getCurrentUser());
+        return userMapper.toResponse(currentUserProvider.getCurrent());
     }
 
     @PatchMapping(ApiPaths.CURRENT)
-    public UserResponse updateCurrentUser(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
-        User user = currentUserProvider.getCurrentUser();
-        return userService.updateUser(updateUserRequest, user.getId());
+    public UserResponse updateCurrent(@Valid @RequestBody UpdateUserRequest request) {
+        User user = currentUserProvider.getCurrent();
+        return userService.update(request, user.getId());
     }
 
-    // TODO: restrict to ADMIN role
+    @IsAdmin
     @PatchMapping(ApiPaths.BY_ID)
-    public UserResponse updateUserById(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
-        return userService.updateUser(updateUserRequest, id);
+    public UserResponse updateById(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
+        return userService.update(request, id);
     }
 
     @PatchMapping(ApiPaths.CURRENT_PASSWORD)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCurrentUserPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
-        userService.updateCurrentUserPassword(currentUserProvider.getCurrentUser(), changePasswordRequest);
+    public void updateCurrentPassword(@Valid @RequestBody ChangePasswordRequest request) {
+        userService.updateCurrentPassword(currentUserProvider.getCurrent(), request);
     }
 
     @DeleteMapping(ApiPaths.CURRENT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCurrentUser() {
-        User user = currentUserProvider.getCurrentUser();
-        userService.deleteCurrentUser(user);
+    public void deleteCurrent() {
+        User user = currentUserProvider.getCurrent();
+        userService.deleteCurrent(user);
     }
 
-    // TODO: restrict to ADMIN role
+    @IsAdmin
     @DeleteMapping(ApiPaths.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUserById(@PathVariable Long id) {
-        User issuer = currentUserProvider.getCurrentUser();
-        userService.deleteUserById(issuer.getId(), id);
+    public void deleteById(@PathVariable Long id) {
+        User issuer = currentUserProvider.getCurrent();
+        userService.deleteById(issuer.getId(), id);
     }
 }

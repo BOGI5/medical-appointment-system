@@ -9,7 +9,7 @@ import java.util.Objects;
 @Component
 public class CurrentUserProvider {
 
-    public User getCurrentUser() {
+    public User getCurrent() {
         return (User)  Objects.requireNonNull(SecurityContextHolder
                         .getContext()
                         .getAuthentication())

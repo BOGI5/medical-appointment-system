@@ -1,5 +1,6 @@
 package com.medical.appointments.security.token;
 
+import com.medical.appointments.database.DbNames;
 import com.medical.appointments.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "refresh_tokens")
+@Table(name = DbNames.REFRESH_TOKENS)
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +26,7 @@ public class RefreshToken {
     private LocalDateTime expiresAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = DbNames.USER_ID, nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 

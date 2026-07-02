@@ -1,14 +1,19 @@
 package com.medical.appointments.security.config;
 
+import com.medical.appointments.controller.ApiPaths;
+import com.medical.appointments.exception.ErrorMessages;
 import com.medical.appointments.security.jwt.JwtAuthFilter;
-import jakarta.servlet.http.HttpServletResponse;
+import com.medical.appointments.security.response.SecurityErrorResponseWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -20,6 +25,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -27,11 +33,12 @@ public class SecurityConfig {
     private String clientBaseUrl;
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final SecurityErrorResponseWriter securityErrorResponseWriter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         return http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -40,17 +47,23 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/auth/**"
+                                ApiPaths.AUTH + ApiPaths.REGISTER,
+                                ApiPaths.AUTH + ApiPaths.LOGIN,
+                                ApiPaths.AUTH + ApiPaths.REFRESH
                         )
                         .permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+                                securityErrorResponseWriter.write(
+                                        response, HttpStatus.UNAUTHORIZED, ErrorMessages.INVALID_ACCESS_TOKEN
                                 )
+                        )
                         .accessDeniedHandler((request, response, accessDeniedException) ->
-                                response.sendError(HttpServletResponse.SC_FORBIDDEN)
+                                securityErrorResponseWriter.write(
+                                        response, HttpStatus.FORBIDDEN, ErrorMessages.ACCESS_DENIED
+                                )
                         )
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

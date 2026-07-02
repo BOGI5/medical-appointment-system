@@ -2,53 +2,51 @@ package com.medical.appointments.auth;
 
 import com.medical.appointments.auth.dto.*;
 import com.medical.appointments.auth.mapper.AuthMapper;
-import com.medical.appointments.exception.InvalidCredentialsException;
+import com.medical.appointments.profiles.patient.PatientProfileService;
+import com.medical.appointments.profiles.patient.dto.CreatePatientProfile;
 import com.medical.appointments.security.jwt.JwtService;
 import com.medical.appointments.security.token.RefreshToken;
 import com.medical.appointments.security.token.RefreshTokenService;
 import com.medical.appointments.exception.InvalidRefreshTokenException;
+import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import com.medical.appointments.user.UserService;
+import com.medical.appointments.user.dto.CreateUserRequest;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final RefreshTokenService refreshTokenService;
-    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final JwtService jwtService;
     private final AuthMapper authMapper;
+    private final PatientProfileService patientProfileService;
 
-    private String hashPassword(String password) {
-        return passwordEncoder.encode(password);
+    public AuthResponse login(LoginRequest request) {
+        return generateAuthResponse(userService.findAndCheckCredentials(request.email(), request.password()));
     }
 
-    public AuthResponse login(LoginRequest loginRequest) {
-        User user = userService.findOptionalByEmail(loginRequest.email())
-                .orElseThrow(InvalidCredentialsException::new);
-
-        if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
-            throw new InvalidCredentialsException();
-        }
-
-        return generateAuthResponse(user);
-    }
-
-    public AuthResponse registerUser(RegisterRequest registerRequest) {
-        User user = userService.createUser(authMapper.toCreateUser(
-                registerRequest,
-                hashPassword(registerRequest.password())
+    @Transactional
+    public AuthResponse registerUser(CreateUserRequest request) {
+        User user = userService.create(authMapper.toCreateUser(
+                request,
+                Set.of(Role.PATIENT),
+                Role.PATIENT
         ));
 
+        patientProfileService.create(new CreatePatientProfile(user));
+
         return generateAuthResponse(user);
     }
 
-    public AuthResponse refreshTokens(TokenRequest tokenRequest) {
-        RefreshToken oldRefreshToken = refreshTokenService.validateToken(tokenRequest.refreshToken());
+    public AuthResponse refreshTokens(TokenRequest request) {
+        RefreshToken oldRefreshToken = refreshTokenService.validateToken(request.refreshToken());
 
         RefreshToken newRefreshToken = refreshTokenService.rotateToken(oldRefreshToken);
 
@@ -61,9 +59,16 @@ public class AuthService {
         );
     }
 
-    public void logoutUser(TokenRequest tokenRequest) {
+    @Transactional
+    public AuthResponse switchCurrentUserRole(SwitchRoleRequest request, User currentUser) {
+        User user = userService.switchRole(request.role(), currentUser.getId());
+        refreshTokenService.revokeToken(request.refreshToken());
+        return generateAuthResponse(user);
+    }
+
+    public void logoutUser(TokenRequest request) {
         try {
-            refreshTokenService.revokeToken(tokenRequest.refreshToken());
+            refreshTokenService.revokeToken(request.refreshToken());
         } catch (InvalidRefreshTokenException ignored) {}
     }
 

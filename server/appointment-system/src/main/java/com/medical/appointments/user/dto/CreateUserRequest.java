@@ -1,10 +1,10 @@
-package com.medical.appointments.auth.dto;
+package com.medical.appointments.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record RegisterRequest(
+public record CreateUserRequest(
         @Email
         @NotBlank
         String email,
