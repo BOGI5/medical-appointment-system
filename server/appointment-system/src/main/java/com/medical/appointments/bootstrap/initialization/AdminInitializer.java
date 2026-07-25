@@ -1,13 +1,14 @@
-package com.medical.appointments.bootstrap;
+package com.medical.appointments.bootstrap.initialization;
 
+import com.medical.appointments.config.properties.BootstrapAdminProperties;
 import com.medical.appointments.logger.LoggerMessages;
 import com.medical.appointments.user.Role;
 import com.medical.appointments.user.UserService;
 import com.medical.appointments.user.dto.CreateUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -15,23 +16,13 @@ import java.util.Set;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AdminInitializer implements CommandLineRunner {
+public class AdminInitializer implements ApplicationRunner {
     private final UserService userService;
 
-    @Value("${app.bootstrap.admin.email}")
-    private String email;
-
-    @Value("${app.bootstrap.admin.password}")
-    private String password;
-
-    @Value("${app.bootstrap.admin.first-name}")
-    private String firstName;
-
-    @Value("${app.bootstrap.admin.last-name}")
-    private String lastName;
+    private final BootstrapAdminProperties properties;
 
     @Override
-    public void run(String... args) {
+    public void run(ApplicationArguments args) {
         if (userService.existsByRole(Role.ADMIN)) {
             log.info(LoggerMessages.ADMIN_ALREADY_EXISTS);
             return;
@@ -39,15 +30,15 @@ public class AdminInitializer implements CommandLineRunner {
 
         userService.create(
                 new CreateUser(
-                    email,
-                    password,
+                    properties.email(),
+                    properties.password(),
                     Set.of(Role.ADMIN),
                     Role.ADMIN,
-                    firstName,
-                    lastName
+                    properties.firstName(),
+                    properties.lastName()
                 )
         );
 
-        log.info(LoggerMessages.ADMIN_CREATED, email);
+        log.info(LoggerMessages.ADMIN_CREATED, properties.email());
     }
 }

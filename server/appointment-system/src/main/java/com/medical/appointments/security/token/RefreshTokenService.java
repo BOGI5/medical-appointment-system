@@ -1,9 +1,9 @@
 package com.medical.appointments.security.token;
 
+import com.medical.appointments.config.properties.RefreshTokenProperties;
 import com.medical.appointments.exception.InvalidRefreshTokenException;
 import com.medical.appointments.user.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,8 +13,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-    @Value("${refresh.token.expiration}")
-    private int refreshTokenExpiration;
+
+    private final RefreshTokenProperties properties;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -24,7 +24,7 @@ public class RefreshTokenService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(token);
         refreshToken.setUser(user);
-        refreshToken.setExpiresAt(LocalDateTime.now().plusDays(refreshTokenExpiration));
+        refreshToken.setExpiresAt(LocalDateTime.now().plusDays(properties.expiration()));
 
         return refreshTokenRepository.save(refreshToken);
     }

@@ -1,11 +1,11 @@
-package com.medical.appointments.security.config;
+package com.medical.appointments.config.security;
 
+import com.medical.appointments.config.properties.ClientProperties;
 import com.medical.appointments.controller.ApiPaths;
 import com.medical.appointments.exception.ErrorMessages;
 import com.medical.appointments.security.jwt.JwtAuthFilter;
 import com.medical.appointments.security.response.SecurityErrorResponseWriter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,8 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${client.base.url}")
-    private String clientBaseUrl;
+    private final ClientProperties clientProperties;
 
     private final JwtAuthFilter jwtAuthFilter;
     private final SecurityErrorResponseWriter securityErrorResponseWriter;
@@ -74,7 +73,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(clientBaseUrl));
+        config.setAllowedOrigins(List.of(clientProperties.baseUrl()));
         config.setAllowedMethods(List.of(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
