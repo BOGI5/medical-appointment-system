@@ -13,33 +13,33 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(ApiPaths.AUTH)
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthService authService;
+    private final AuthService service;
     private final CurrentUserProvider currentUserProvider;
 
     @PostMapping(ApiPaths.REGISTER)
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody CreateUserRequest request) {
-        return authService.registerUser(request);
+        return service.register(request);
     }
 
     @PostMapping(ApiPaths.LOGIN)
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
-        return authService.login(request);
+        return service.login(request);
     }
 
     @PostMapping(ApiPaths.LOGOUT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@Valid @RequestBody TokenRequest request) {
-        authService.logoutUser(request);
+        service.logout(request);
     }
 
     @PostMapping(ApiPaths.REFRESH)
-    public AuthResponse refreshToken(@Valid @RequestBody TokenRequest request) {
-        return authService.refreshTokens(request);
+    public AuthResponse refreshTokens(@Valid @RequestBody TokenRequest request) {
+        return service.refreshTokens(request);
     }
 
     @PostMapping(ApiPaths.SWITCH_ROLE)
     public AuthResponse switchRole(@Valid @RequestBody SwitchRoleRequest request) {
-        return authService.switchCurrentUserRole(request, currentUserProvider.getCurrent());
+        return service.switchCurrentUserRole(request, currentUserProvider.getCurrent());
     }
 }

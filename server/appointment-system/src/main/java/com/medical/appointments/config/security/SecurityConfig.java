@@ -31,8 +31,8 @@ public class SecurityConfig {
 
     private final ClientProperties clientProperties;
 
-    private final JwtAuthFilter jwtAuthFilter;
-    private final SecurityErrorResponseWriter securityErrorResponseWriter;
+    private final JwtAuthFilter authFilter;
+    private final SecurityErrorResponseWriter responseWriter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
@@ -55,17 +55,17 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
-                                securityErrorResponseWriter.write(
+                                responseWriter.write(
                                         response, HttpStatus.UNAUTHORIZED, ErrorMessages.INVALID_ACCESS_TOKEN
                                 )
                         )
                         .accessDeniedHandler((request, response, accessDeniedException) ->
-                                securityErrorResponseWriter.write(
+                                responseWriter.write(
                                         response, HttpStatus.FORBIDDEN, ErrorMessages.ACCESS_DENIED
                                 )
                         )
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

@@ -19,36 +19,36 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(ApiPaths.DOCTOR_PROFILES)
 @RequiredArgsConstructor
 public class DoctorProfileController {
-    private final DoctorProfileService doctorProfileService;
+    private final DoctorProfileService service;
     private final CurrentUserProvider currentUserProvider;
 
     @IsAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DoctorProfileResponse create(@Valid @RequestBody CreateUserRequest request) {
-        return doctorProfileService.createUserAndProfile(request);
+        return service.createUserAndProfile(request);
     }
 
     @IsDoctor
     @GetMapping(ApiPaths.CURRENT)
     public DoctorProfileResponse getCurrent() {
-        return doctorProfileService.findByUser(currentUserProvider.getCurrent());
+        return service.findByUser(currentUserProvider.getCurrent());
     }
 
     @GetMapping(ApiPaths.BY_ID)
     public DoctorProfileResponse getById(@PathVariable Long id) {
-        return doctorProfileService.findById(id);
+        return service.findById(id);
     }
 
     @GetMapping
     public Page<DoctorProfileResponse> getAll(@ParameterObject Pageable pageable) {
-        return doctorProfileService.findAll(pageable);
+        return service.findAll(pageable);
     }
 
     @IsDoctor
     @PatchMapping(ApiPaths.CURRENT)
     public DoctorProfileResponse updateCurrent(@Valid @RequestBody UpdateDoctorRequest request) {
-        return doctorProfileService.updateById(request, currentUserProvider.getCurrent().getId());
+        return service.updateById(request, currentUserProvider.getCurrent().getId());
     }
 
     @IsAdmin
@@ -57,20 +57,20 @@ public class DoctorProfileController {
             @RequestBody @Valid UpdateDoctorRequest request,
             @PathVariable Long id
     ) {
-        return doctorProfileService.updateById(request, id);
+        return service.updateById(request, id);
     }
 
     @IsDoctor
     @DeleteMapping(ApiPaths.CURRENT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCurrent() {
-        doctorProfileService.deleteById(currentUserProvider.getCurrent().getId());
+        service.deleteById(currentUserProvider.getCurrent().getId());
     }
 
     @IsAdmin
     @DeleteMapping(ApiPaths.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) {
-        doctorProfileService.deleteById(id);
+        service.deleteById(id);
     }
 }

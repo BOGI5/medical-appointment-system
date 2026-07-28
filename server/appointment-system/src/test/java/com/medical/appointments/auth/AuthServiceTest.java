@@ -130,7 +130,7 @@ class AuthServiceTest {
         mockAuthResponseMapper();
 
         // when
-        AuthResponse result = authService.registerUser(request);
+        AuthResponse result = authService.register(request);
 
         // then
         assertNotNull(result);
@@ -173,7 +173,7 @@ class AuthServiceTest {
 
         // when + then
         assertThrows(UserAlreadyExistsException.class,
-                () -> authService.registerUser(request));
+                () -> authService.register(request));
 
         // verify
         verify(authMapper).toCreateUser(
@@ -334,7 +334,7 @@ class AuthServiceTest {
         TokenRequest request = new TokenRequest("refresh-token");
 
         // when
-        authService.logoutUser(request);
+        authService.logout(request);
 
         // then
         verify(refreshTokenService).revokeToken("refresh-token");
@@ -350,7 +350,7 @@ class AuthServiceTest {
                 .revokeToken("bad-token");
 
         // when + then
-        assertDoesNotThrow(() -> authService.logoutUser(request));
+        assertDoesNotThrow(() -> authService.logout(request));
 
         verify(refreshTokenService).revokeToken("bad-token");
     }

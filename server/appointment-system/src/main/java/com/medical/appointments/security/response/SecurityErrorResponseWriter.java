@@ -13,7 +13,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class SecurityErrorResponseWriter {
 
-    private final JsonMapper jsonMapper;
+    private final JsonMapper mapper;
 
     public void write(HttpServletResponse response, HttpStatus status, String message) throws IOException {
 
@@ -27,7 +27,7 @@ public class SecurityErrorResponseWriter {
                 message
         );
 
-        String body = jsonMapper.writeValueAsString(exceptionResponse);
+        String body = mapper.writeValueAsString(exceptionResponse);
 
         response.getWriter().write(body);
     }

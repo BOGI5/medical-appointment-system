@@ -16,29 +16,29 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(ApiPaths.ALLERGIES)
 @RequiredArgsConstructor
 public class AllergyController {
-    private final AllergyService allergyService;
+    private final AllergyService service;
 
     @IsAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AllergyResponse create(@RequestBody @Valid CreateAllergyRequest request) {
-        return allergyService.create(request);
+        return service.create(request);
     }
 
     @GetMapping
     public Page<AllergyResponse> getAll(@ParameterObject Pageable pageable) {
-        return allergyService.findAll(pageable);
+        return service.findAll(pageable);
     }
 
     @GetMapping(ApiPaths.BY_ID)
     public AllergyResponse getById(@PathVariable Long id) {
-        return allergyService.findById(id);
+        return service.findById(id);
     }
 
     @IsAdmin
     @DeleteMapping(ApiPaths.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        allergyService.deleteById(id);
+        service.deleteById(id);
     }
 }

@@ -16,7 +16,7 @@ public class RefreshTokenService {
 
     private final RefreshTokenProperties properties;
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository repository;
 
     public RefreshToken create(User user) {
         String token = UUID.randomUUID().toString().replace("-", "");
@@ -26,11 +26,11 @@ public class RefreshTokenService {
         refreshToken.setUser(user);
         refreshToken.setExpiresAt(LocalDateTime.now().plusDays(properties.expiration()));
 
-        return refreshTokenRepository.save(refreshToken);
+        return repository.save(refreshToken);
     }
 
     public RefreshToken validateToken(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
+        RefreshToken refreshToken = repository.findByToken(token)
                 .orElseThrow(InvalidRefreshTokenException::new);
 
         if (
@@ -47,7 +47,7 @@ public class RefreshTokenService {
     @Transactional
     public RefreshToken rotateToken(RefreshToken refreshToken) {
         refreshToken.setActive(false);
-        refreshTokenRepository.save(refreshToken);
+        repository.save(refreshToken);
         return create(refreshToken.getUser());
     }
 
@@ -55,6 +55,6 @@ public class RefreshTokenService {
     public void revokeToken(String token) {
         RefreshToken refreshToken = validateToken(token);
         refreshToken.setActive(false);
-        refreshTokenRepository.save(refreshToken);
+        repository.save(refreshToken);
     }
 }

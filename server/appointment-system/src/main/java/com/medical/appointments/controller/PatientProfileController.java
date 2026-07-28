@@ -19,38 +19,38 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(ApiPaths.PATIENT_PROFILES)
 @RequiredArgsConstructor
 public class PatientProfileController {
-    private final PatientProfileService patientProfileService;
+    private final PatientProfileService service;
     private final CurrentUserProvider currentUserProvider;
 
     @IsAdminOrDoctor
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PatientProfileResponse create() {
-        return patientProfileService.createForExistingUser(currentUserProvider.getCurrent());
+        return service.createForExistingUser(currentUserProvider.getCurrent());
     }
 
     @IsAdminOrDoctor
     @GetMapping
     public Page<PatientProfileResponse> getAll(@ParameterObject Pageable pageable) {
-        return patientProfileService.findAll(pageable);
+        return service.findAll(pageable);
     }
 
     @IsPatient
     @GetMapping(ApiPaths.CURRENT)
     public PatientProfileResponse getCurrent() {
-        return patientProfileService.findByUser(currentUserProvider.getCurrent());
+        return service.findByUser(currentUserProvider.getCurrent());
     }
 
     @IsAdminOrDoctor
     @GetMapping(ApiPaths.BY_ID)
     public PatientProfileResponse getById(@PathVariable Long id) {
-        return patientProfileService.findById(id);
+        return service.findById(id);
     }
 
     @IsPatient
     @PatchMapping(ApiPaths.CURRENT)
     public PatientProfileResponse updateCurrent(@RequestBody @Valid UpdatePatientRequest request) {
-        return patientProfileService.updateById(
+        return service.updateById(
                 request,
                 currentUserProvider.getCurrent().getId()
         );
@@ -59,7 +59,7 @@ public class PatientProfileController {
     @IsPatient
     @PostMapping(ApiPaths.CURRENT_ALLERGIES_BY_ID)
     public PatientProfileResponse addAllergyToCurrent(@PathVariable Long allergyId) {
-        return patientProfileService.addAllergyById(allergyId, currentUserProvider.getCurrent().getId());
+        return service.addAllergyById(allergyId, currentUserProvider.getCurrent().getId());
     }
 
     @IsAdmin
@@ -68,40 +68,40 @@ public class PatientProfileController {
             @RequestBody @Valid UpdatePatientRequest request,
             @PathVariable Long id
     ) {
-        return patientProfileService.updateById(request, id);
+        return service.updateById(request, id);
     }
 
     @IsAdmin
     @PostMapping(ApiPaths.BY_ID_ALLERGY_BY_ID)
     public PatientProfileResponse addAllergyToPatientById(@PathVariable Long id, @PathVariable Long allergyId) {
-        return patientProfileService.addAllergyById(allergyId, id);
+        return service.addAllergyById(allergyId, id);
     }
 
     @IsPatient
     @DeleteMapping(ApiPaths.CURRENT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCurrent() {
-        patientProfileService.deleteById(currentUserProvider.getCurrent().getId());
+        service.deleteById(currentUserProvider.getCurrent().getId());
     }
 
     @IsPatient
     @DeleteMapping(ApiPaths.CURRENT_ALLERGIES_BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeAllergyFromCurrent(@PathVariable Long allergyId) {
-        patientProfileService.removeAllergy(allergyId, currentUserProvider.getCurrent().getId());
+        service.removeAllergy(allergyId, currentUserProvider.getCurrent().getId());
     }
 
     @IsAdmin
     @DeleteMapping(ApiPaths.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) {
-        patientProfileService.deleteById(id);
+        service.deleteById(id);
     }
 
     @IsAdmin
     @DeleteMapping(ApiPaths.BY_ID_ALLERGY_BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeAllergyFromPatientById(@PathVariable Long id, @PathVariable Long allergyId) {
-        patientProfileService.removeAllergy(allergyId, id);
+        service.removeAllergy(allergyId, id);
     }
 }

@@ -16,29 +16,29 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(ApiPaths.SPECIALIZATIONS)
 @RequiredArgsConstructor
 public class SpecializationController {
-    private final SpecializationService specializationService;
+    private final SpecializationService service;
 
     @IsAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SpecializationResponse create(@RequestBody @Valid CreateSpecializationRequest request) {
-        return specializationService.create(request);
+        return service.create(request);
     }
 
     @GetMapping
     public Page<SpecializationResponse> getAll(@ParameterObject Pageable pageable) {
-        return specializationService.findAll(pageable);
+        return service.findAll(pageable);
     }
 
     @GetMapping(ApiPaths.BY_ID)
     public SpecializationResponse getById(@PathVariable Long id) {
-        return specializationService.findById(id);
+        return service.findById(id);
     }
 
     @IsAdmin
     @DeleteMapping(ApiPaths.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        specializationService.deleteById(id);
+        service.deleteById(id);
     }
 }

@@ -15,29 +15,29 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @IsAdmin
 public class AdminController {
-    private final AdminService adminService;
+    private final AdminService service;
     private final CurrentUserProvider currentUserProvider;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse createNew(@RequestBody @Valid CreateUserRequest request) {
-        return adminService.create(request);
+        return service.create(request);
     }
 
     @PostMapping(ApiPaths.BY_ID)
     public UserResponse promoteExistingById(@PathVariable Long id) {
-        return adminService.promoteById(id);
+        return service.promoteById(id);
     }
 
     @DeleteMapping(ApiPaths.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeAdminRoleById(@PathVariable Long id) {
-        adminService.removeAdminRole(id);
+        service.removeAdminRole(id);
     }
 
     @DeleteMapping(ApiPaths.CURRENT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeCurrentUserAdminRole() {
-        adminService.removeAdminRole(currentUserProvider.getCurrent().getId());
+        service.removeAdminRole(currentUserProvider.getCurrent().getId());
     }
 }
