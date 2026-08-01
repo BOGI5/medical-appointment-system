@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
+                                "/actuator/health",
                                 ApiPaths.AUTH + ApiPaths.REGISTER,
                                 ApiPaths.AUTH + ApiPaths.LOGIN,
                                 ApiPaths.AUTH + ApiPaths.REFRESH

@@ -1,16 +1,83 @@
 services:
   postgres:
     image: postgres:15
-    container_name: medical_postgres
-    restart: always
-    environment:
-      POSTGRES_DB: medical
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    restart: unless-stopped
+
+    env_file:
+      - ./server/appointment-system/.env
+
     ports:
       - "5432:5432"
+
+    networks:
+      - medical-network
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server/appointment-system
+
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    env_file:
+      - ./server/appointment-system/.env
+
+    environment:
+      POSTGRES_HOST: postgres
+
+    ports:
+      - "8080:8080"
+
+    networks:
+      - medical-network
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  client:
+    build: 
+      context: ./client
+
+    restart: unless-stopped
+
+    depends_on:
+      server:
+        condition: service_healthy
+
+    env_file:
+      - ./client/.env
+
+    environment:
+      CHOKIDAR_USEPOLLING: true
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+
+    networks:
+      - medical-network
+
 volumes:
   postgres_data:
+
+networks:
+  medical-network:
