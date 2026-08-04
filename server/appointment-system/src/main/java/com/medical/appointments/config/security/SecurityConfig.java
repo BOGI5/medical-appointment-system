@@ -1,11 +1,11 @@
-package com.medical.appointments.security.config;
+package com.medical.appointments.config.security;
 
+import com.medical.appointments.config.properties.ClientProperties;
 import com.medical.appointments.controller.ApiPaths;
 import com.medical.appointments.exception.ErrorMessages;
 import com.medical.appointments.security.jwt.JwtAuthFilter;
 import com.medical.appointments.security.response.SecurityErrorResponseWriter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,11 +29,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${client.base.url}")
-    private String clientBaseUrl;
+    private final ClientProperties clientProperties;
 
-    private final JwtAuthFilter jwtAuthFilter;
-    private final SecurityErrorResponseWriter securityErrorResponseWriter;
+    private final JwtAuthFilter authFilter;
+    private final SecurityErrorResponseWriter responseWriter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
@@ -47,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
+                                "/actuator/health",
                                 ApiPaths.AUTH + ApiPaths.REGISTER,
                                 ApiPaths.AUTH + ApiPaths.LOGIN,
                                 ApiPaths.AUTH + ApiPaths.REFRESH
@@ -56,17 +56,17 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
-                                securityErrorResponseWriter.write(
+                                responseWriter.write(
                                         response, HttpStatus.UNAUTHORIZED, ErrorMessages.INVALID_ACCESS_TOKEN
                                 )
                         )
                         .accessDeniedHandler((request, response, accessDeniedException) ->
-                                securityErrorResponseWriter.write(
+                                responseWriter.write(
                                         response, HttpStatus.FORBIDDEN, ErrorMessages.ACCESS_DENIED
                                 )
                         )
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -74,7 +74,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(clientBaseUrl));
+        config.setAllowedOrigins(List.of(clientProperties.baseUrl()));
         config.setAllowedMethods(List.of(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),

@@ -22,19 +22,19 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private final PatientProfileService patientProfileService;
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
     private final JwtService jwtService;
-    private final AuthMapper authMapper;
-    private final PatientProfileService patientProfileService;
+    private final AuthMapper mapper;
 
     public AuthResponse login(LoginRequest request) {
         return generateAuthResponse(userService.findAndCheckCredentials(request.email(), request.password()));
     }
 
     @Transactional
-    public AuthResponse registerUser(CreateUserRequest request) {
-        User user = userService.create(authMapper.toCreateUser(
+    public AuthResponse register(CreateUserRequest request) {
+        User user = userService.create(mapper.toCreateUser(
                 request,
                 Set.of(Role.PATIENT),
                 Role.PATIENT
@@ -52,7 +52,7 @@ public class AuthService {
 
         String newAccessToken = jwtService.generateToken(newRefreshToken.getUser());
 
-        return authMapper.toAuthResponse(
+        return mapper.toAuthResponse(
                 newRefreshToken.getUser(),
                 newAccessToken,
                 newRefreshToken.getToken()
@@ -66,7 +66,7 @@ public class AuthService {
         return generateAuthResponse(user);
     }
 
-    public void logoutUser(TokenRequest request) {
+    public void logout(TokenRequest request) {
         try {
             refreshTokenService.revokeToken(request.refreshToken());
         } catch (InvalidRefreshTokenException ignored) {}
@@ -75,6 +75,6 @@ public class AuthService {
     private AuthResponse generateAuthResponse(User user) {
         String accessToken = jwtService.generateToken(user);
         String refreshToken = refreshTokenService.create(user).getToken();
-        return authMapper.toAuthResponse(user, accessToken, refreshToken);
+        return mapper.toAuthResponse(user, accessToken, refreshToken);
     }
 }

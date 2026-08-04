@@ -17,38 +17,38 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(ApiPaths.USERS)
 @RequiredArgsConstructor
 public class UserController {
-    private final UserMapper userMapper;
-    private final UserService userService;
+    private final UserMapper mapper;
+    private final UserService service;
     private final CurrentUserProvider currentUserProvider;
 
     @GetMapping(ApiPaths.CURRENT)
     public UserResponse getCurrentUser() {
-        return userMapper.toResponse(currentUserProvider.getCurrent());
+        return mapper.toResponse(currentUserProvider.getCurrent());
     }
 
     @PatchMapping(ApiPaths.CURRENT)
     public UserResponse updateCurrent(@Valid @RequestBody UpdateUserRequest request) {
         User user = currentUserProvider.getCurrent();
-        return userService.update(request, user.getId());
+        return service.update(request, user.getId());
     }
 
     @IsAdmin
     @PatchMapping(ApiPaths.BY_ID)
     public UserResponse updateById(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
-        return userService.update(request, id);
+        return service.update(request, id);
     }
 
     @PatchMapping(ApiPaths.CURRENT_PASSWORD)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateCurrentPassword(@Valid @RequestBody ChangePasswordRequest request) {
-        userService.updateCurrentPassword(currentUserProvider.getCurrent(), request);
+        service.updateCurrentPassword(currentUserProvider.getCurrent(), request);
     }
 
     @DeleteMapping(ApiPaths.CURRENT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCurrent() {
         User user = currentUserProvider.getCurrent();
-        userService.deleteCurrent(user);
+        service.deleteCurrent(user);
     }
 
     @IsAdmin
@@ -56,6 +56,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) {
         User issuer = currentUserProvider.getCurrent();
-        userService.deleteById(issuer.getId(), id);
+        service.deleteById(issuer.getId(), id);
     }
 }

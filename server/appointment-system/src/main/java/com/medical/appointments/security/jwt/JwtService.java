@@ -1,11 +1,13 @@
 package com.medical.appointments.security.jwt;
 
+import com.medical.appointments.config.properties.AccessTokenProperties;
+import com.medical.appointments.config.properties.JwtProperties;
 import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -15,13 +17,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
-
-    @Value("${access.token.expiration}")
-    private long accessTokenExpirationInMillis;
+    private final JwtProperties jwtProperties;
+    private final AccessTokenProperties accessTokenProperties;
 
     private static final String ROLES_CLAIM = "roles";
     private static final String ACTIVE_ROLE_CLAIM = "activeRole";
@@ -34,7 +34,7 @@ public class JwtService {
                         .toList())
                 .claim(ACTIVE_ROLE_CLAIM, user.getActiveRole().name())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationInMillis))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenProperties.expiration()))
                 .signWith(getSignKey())
                 .compact();
     }
@@ -83,6 +83,6 @@ public class JwtService {
     }
 
     private SecretKey getSignKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret()));
     }
 }

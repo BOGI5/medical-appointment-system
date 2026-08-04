@@ -40,14 +40,14 @@ public class DoctorProfileMapper implements ProfileMapper<DoctorProfile, DoctorP
         return new DoctorProfile(createProfile.user());
     }
 
-    public CreateUser toCreateUser(CreateUserRequest createUserRequest) {
+    public CreateUser toCreateUser(CreateUserRequest request) {
         return new CreateUser(
-                createUserRequest.email(),
-                createUserRequest.password(),
+                request.email(),
+                request.password(),
                 Set.of(Role.DOCTOR),
                 Role.DOCTOR,
-                createUserRequest.firstName(),
-                createUserRequest.lastName()
+                request.firstName(),
+                request.lastName()
         );
     }
 }

@@ -1,0 +1,14 @@
+target
+
+.git
+.gitignore
+.gitattributes
+
+.idea
+.vscode
+*.iml
+
+.env
+.env.example
+
+.DS_Store
