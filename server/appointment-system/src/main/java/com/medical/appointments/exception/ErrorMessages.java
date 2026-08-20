@@ -32,4 +32,12 @@ public final class ErrorMessages {
     public static final String REFERENCE_NOT_FOUND = "Reference not found";
     public static final String REFERENCE_ALREADY_ASSIGNED = "Reference already assigned";
     public static final String REFERENCE_NOT_ASSIGNED = "Reference not assigned";
+
+    // time slot
+    public static final String TIME_RANGE_IN_THE_PAST = "Time slot range cannot start in the past";
+    public static final String TIME_RANGE_ALREADY_EXISTS = "Time range overlaps with existing time slots";
+    public static final String TIME_RANGE_NOT_DIVISIBLE = "Time range must be divisible by time slot duration";
+    public static final String TIME_SLOT_NOT_FOUND = "Time slot not found";
+    public static final String INVALID_TIME_ORDER = "Start time is after or equal to end time";
+    public static final String NO_ACCESS_TO_TIME_SLOT = "No access to time slot";
 }
