@@ -49,9 +49,10 @@ public class TimeSlotService {
     private void validateTimeRangeCreation(LocalDateTime startAt, LocalDateTime endAt, User currentUser) {
         validateTimeRange(startAt, endAt, LocalDateTime.now());
 
-        long minutes = Duration.between(startAt, endAt).toMinutes();
+        Duration range = Duration.between(startAt, endAt);
+        long minutes = range.toMinutes();
 
-        if (minutes % properties.duration() != 0) {
+        if (!range.equals(Duration.ofMinutes(minutes)) || minutes % properties.duration() != 0) {
             throw new TimeRangeNotDivisibleException();
         }
 
@@ -78,9 +79,7 @@ public class TimeSlotService {
         LocalDateTime now = LocalDateTime.now();
         startAt = startAt == null ? now : startAt;
 
-        if (endAt != null) {
-            validateTimeRange(startAt, endAt, now);
-        }
+        validateTimeRange(startAt, endAt, now);
 
         return startAt;
     }
