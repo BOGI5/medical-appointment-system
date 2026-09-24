@@ -1,5 +1,6 @@
 package com.medical.appointments.security.token;
 
+import com.medical.appointments.config.properties.RefreshTokenProperties;
 import com.medical.appointments.exception.InvalidRefreshTokenException;
 import com.medical.appointments.user.Role;
 import com.medical.appointments.user.User;
@@ -20,6 +21,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RefreshTokenServiceTest {
+    @Mock
+    RefreshTokenProperties properties;
 
     @Mock
     private RefreshTokenRepository repository;
@@ -39,9 +42,6 @@ class RefreshTokenServiceTest {
                 .roles(Set.of(Role.PATIENT))
                 .activeRole(Role.PATIENT)
                 .build();
-
-        // set expiration 1 day
-        ReflectionTestUtils.setField(service, "refreshTokenExpiration", 1);
     }
 
     // ===== CREATE =====
@@ -49,6 +49,8 @@ class RefreshTokenServiceTest {
     @Test
     void create_success() {
         // given
+        when(properties.expiration()).thenReturn(1L);
+
         when(repository.save(any()))
                 .thenAnswer(inv -> inv.getArgument(0));
 
@@ -197,6 +199,8 @@ class RefreshTokenServiceTest {
     void rotateToken_success() {
         // given
         RefreshToken oldToken = validToken();
+
+        when(properties.expiration()).thenReturn(1L);
 
         when(repository.save(any()))
                 .thenAnswer(inv -> inv.getArgument(0));

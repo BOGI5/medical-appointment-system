@@ -12,10 +12,12 @@ public final class DbNames {
     public static final String ALLERGIES = "allergies";
     public static final String SPECIALIZATIONS = "specializations";
     public static final String PATIENT_ALLERGIES = "patient_allergies";
+    public static final String TIME_SLOTS = "time_slots";
 
     // column keys
     public static final String USER_ID = "user_id";
     public static final String PATIENT_ID = "patient_id";
+    public static final String DOCTOR_ID = "doctor_id";
     public static final String ALLERGY_ID = "allergy_id";
     public static final String SPECIALIZATION_ID = "specialization_id";
 }

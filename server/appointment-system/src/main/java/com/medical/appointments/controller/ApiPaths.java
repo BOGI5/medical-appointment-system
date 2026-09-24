@@ -12,6 +12,7 @@ public final class ApiPaths {
     public static final String DOCTOR_PROFILES = "/doctor-profiles";
     public static final String ALLERGIES = "/allergies";
     public static final String SPECIALIZATIONS = "/specializations";
+    public static final String TIME_SLOTS = "/time-slots";
 
     // general
     public static final String CURRENT = "/current";
@@ -31,4 +32,10 @@ public final class ApiPaths {
     public static final String ALLERGY_ID = "/{allergyId}";
     public static final String CURRENT_ALLERGIES_BY_ID = CURRENT + ALLERGIES + ALLERGY_ID;
     public static final String BY_ID_ALLERGY_BY_ID = BY_ID + ALLERGIES + ALLERGY_ID;
+
+    // time slots
+    public static final String BY_DOCTOR_ID = "/doctor" + BY_ID;
+    public static final String BY_SPECIALIZATION_ID = "/specialization" + BY_ID;
+    public static final String CURRENT_DOCTOR = "/doctor" + CURRENT;
+    public static final String DURATION = "/duration";
 }

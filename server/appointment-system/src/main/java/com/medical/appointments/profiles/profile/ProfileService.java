@@ -48,7 +48,7 @@ public abstract class ProfileService<
         return mapper.toResponse(findEntityById(id));
     }
 
-    protected E findEntityById(Long id) {
+    public E findEntityById(Long id) {
         return repository.findById(id)
                 .orElseThrow(ProfileNotFoundException::new);
     }
